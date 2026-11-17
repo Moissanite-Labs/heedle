@@ -206,8 +206,9 @@ input[type="range"]::-moz-range-thumb { width: 8px; height: 16px; border: 0; bor
 .about { border-top: 1px solid var(--rule); padding-top: 16px; display: grid; gap: 14px; grid-template-columns: repeat(auto-fit, minmax(min(100%, 300px), 1fr)); }
 .about div { display: grid; gap: 6px; align-content: start; min-width: 0; }
 .about p, .about li { color: var(--ink-2); max-width: 62ch; }
-.about ul { margin: 0; padding-left: 18px; display: grid; gap: 3px; }
+.about ul, .about ol { margin: 0; padding-left: 18px; display: grid; gap: 3px; }
 .about b { color: var(--ink); font-weight: 500; }
+.guide { border-top: 0; border-bottom: 1px solid var(--rule); padding: 0 0 14px; margin-bottom: 14px; }
 textarea#draft-out { width: 100%; height: 84px; font: 11px/1.4 var(--mono); background: var(--panel); color: var(--ink); border: 1px solid var(--rule); padding: 6px; resize: vertical; }
 code { font: 12px var(--mono); background: var(--panel); padding: 1px 4px; border-radius: 2px; overflow-wrap: anywhere; }
 
@@ -275,6 +276,23 @@ code { font: 12px var(--mono); background: var(--panel); padding: 1px 4px; borde
       <label class="check only-cloth"><input type="checkbox" id="show-probes"> Probes</label>
     </div>
   </header>
+
+  <section class="about guide" aria-labelledby="h-guide">
+    <div>
+      <h2 id="h-guide">What this page is</h2>
+      <p>Heedle is a workbench for steering a small model by hand. A model is a set of numbers that turns inputs into outputs. Here you change those numbers a little at a time, and the page checks each change before it keeps it.</p>
+      <p>There are two models to steer. Cloth turns a point on a square into a colour, so you watch a picture change. Text reads three characters and guesses the next one, so you watch lines of text change. Both are tiny on purpose: the cloth has 467 numbers, the text model 4,700. They are toys built for this instrument, not a real chatbot.</p>
+    </div>
+    <div>
+      <h2>Try it in three steps</h2>
+      <ol>
+        <li><b>Press a treadle.</b> A treadle is a named change, such as tilting the cloth. The page shows what the change would do before anything moves.</li>
+        <li><b>Beat the pick in.</b> The page checks the move: the numbers must stay near where they started, and no input may change by more than the limit. If a check fails, the pick snaps and nothing moves.</li>
+        <li><b>Click an input to pin it.</b> Pinned inputs are held still while the rest changes. Click a pick to go back to it.</li>
+      </ol>
+      <p>The words on the page are weaving words. A shaft is a direction the model changes most. A heddle is a pinned input. A pick is one change that passed the checks. A snap is one the checks refused. The full list of what is checked is in the <a href="https://github.com/Moissanite-Labs/heedle/blob/main/docs/protocol.md">draft specification</a>.</p>
+    </div>
+  </section>
 
   <main class="draft" id="draft">
     <section class="threading" aria-labelledby="h-threading">
