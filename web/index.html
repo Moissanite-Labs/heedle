@@ -93,7 +93,7 @@ input[type="range"]::-moz-range-thumb { width: 8px; height: 16px; border: 0; bor
 .draft {
   display: grid; gap: 14px 22px;
   grid-template-columns: minmax(0, 1fr) calc(34px + 5 * var(--col) + 2px);
-  grid-template-areas: "drawdown treadling" "shed treadling" "lamp treadling" "threading tieup";
+  grid-template-areas: "drawdown treadling" "futures treadling" "lamp treadling" "threading tieup";
   align-items: start;
 }
 .draft > section { min-width: 0; display: grid; gap: 6px; }
@@ -101,7 +101,7 @@ input[type="range"]::-moz-range-thumb { width: 8px; height: 16px; border: 0; bor
 .tieup { grid-area: tieup; }
 .drawdown { grid-area: drawdown; }
 .treadling { grid-area: treadling; }
-.shed { grid-area: shed; }
+.futures { grid-area: futures; }
 .lamp { grid-area: lamp; }
 
 .rows { border-top: 1px solid var(--rule); }
@@ -141,7 +141,6 @@ input[type="range"]::-moz-range-thumb { width: 8px; height: 16px; border: 0; bor
 }
 .selv { position: relative; background: var(--panel); border: 1px solid var(--rule); overflow: hidden; }
 .selv i { position: absolute; inset: auto 0 0 0; height: 0; background: var(--woad); }
-.selv b { position: absolute; left: 0; right: 0; height: 2px; background: var(--ink); }
 .selv[data-zone="shared"] i, .selv[data-zone="knot"] i { background: var(--weld); }
 .selv[data-zone="refused"] i, .selv[data-zone="over"] i { background: var(--madder); }
 .legend { display: flex; flex-wrap: wrap; gap: 4px 18px; color: var(--ink-2); font-size: 12px; max-width: 600px; }
@@ -187,7 +186,7 @@ input[type="range"]::-moz-range-thumb { width: 8px; height: 16px; border: 0; bor
   height: var(--row); display: flex; align-items: center; padding: 0 8px; font: 11px/1 var(--mono); color: var(--ink-2); }
 .empty { color: var(--ink-2); font-size: 12.5px; padding: 8px 0; }
 
-/* Shed */
+/* Futures */
 .fan { display: grid; grid-template-columns: repeat(6, minmax(0, 1fr)); gap: 6px; max-width: 600px; }
 .fan button { padding: 0; border-width: 2px; border-radius: 2px; display: grid; background: var(--panel); }
 .fan canvas { width: 100%; aspect-ratio: 1; display: block; }
@@ -255,7 +254,7 @@ code { font: 12px var(--mono); background: var(--panel); padding: 1px 4px; borde
 
 @media (max-width: 860px) {
   :root { --col: clamp(46px, calc((100vw - 34px - 34px) / 5), 64px); }
-  .draft { grid-template-columns: minmax(0, 1fr); grid-template-areas: "drawdown" "treadling" "lamp" "shed" "threading" "tieup"; }
+  .draft { grid-template-columns: minmax(0, 1fr); grid-template-areas: "drawdown" "treadling" "lamp" "futures" "threading" "tieup"; }
   .shaft { grid-template-columns: 22px 20px 40px minmax(60px, 1fr) 46px; }
 }
 @media (prefers-reduced-motion: reduce) { * { scroll-behavior: auto; } }
@@ -266,7 +265,7 @@ code { font: 12px var(--mono); background: var(--panel); padding: 1px 4px; borde
   <header class="top">
     <div>
       <h1>Heedle <span class="switch" role="navigation" aria-label="Choose a loom"><a href="#cloth" id="go-cloth">Cloth</a><a href="#text" id="go-text">Text</a></span></h1>
-      <p class="sub only-cloth">A loom for steering a small model by hand. The cloth is everything the model does. Press treadles to change it, beat a pick in, and read what was checked.</p>
+      <p class="sub only-cloth">A loom for steering a small model by hand. The cloth is what the model does at each point of a square. Press treadles to change it, beat a pick in, and read what was checked.</p>
       <p class="sub only-text">A loom for steering a small language model by hand. Each pick weaves a line. Press treadles to change what comes next, beat a pick in, and read what was checked on every context the model has.</p>
     </div>
     <div class="bar">
@@ -292,12 +291,12 @@ code { font: 12px var(--mono); background: var(--panel); padding: 1px 4px; borde
     <section class="drawdown" aria-labelledby="h-drawdown">
       <h2 id="h-drawdown">Drawdown <small id="fell-note"></small></h2>
       <div class="cloth">
-        <div class="selv" id="selv-ball" title="Distance from the baseline, against the gate's radius"><i></i><b></b></div>
+        <div class="selv" id="selv-ball" title="Distance from the baseline, against the gate's radius"><i></i></div>
         <div class="slot" id="slot"></div>
         <div class="selv" id="selv-beh" title="Predicted change of the worst probe, against the claim's limit"><i></i></div>
       </div>
       <div class="legend">
-        <span><b>Left selvedge</b> distance from baseline, of radius <span class="num" id="r-out"></span></span>
+        <span><b>Left selvedge</b> distance from baseline, of the gate's radius <span class="num" id="r-out"></span></span>
         <span><b>Right selvedge</b> predicted worst change, of limit <span class="num" id="tau-out"></span></span>
         <span class="only-cloth"><b>Click the cloth</b> to raise a heddle: that point must not move</span>
         <span class="only-text"><b>Click a context</b> in the pattern to raise a heddle: what follows it must not change</span>
@@ -315,6 +314,7 @@ code { font: 12px var(--mono); background: var(--panel); padding: 1px 4px; borde
       <button class="beat" id="beat" data-zone="auto"><span id="beat-label">Press a treadle</span></button>
       <dl class="facts">
         <dt>Move length</dt><dd id="f-length">0</dd>
+        <dt>Proved safe to</dt><dd id="f-proved">0</dd>
         <dt>Predicted change</dt><dd id="f-pred">0</dd>
         <dt>At the worst probe</dt><dd id="f-worst">0</dd>
         <dt>Tension</dt><dd><span id="f-tension">0.00</span> <span class="zone" id="f-zone" data-zone="auto">rest</span></dd>
@@ -331,8 +331,8 @@ code { font: 12px var(--mono); background: var(--panel); padding: 1px 4px; borde
       <button id="unpick" hidden>Hold to unpick</button>
     </section>
 
-    <section class="shed" aria-labelledby="h-shed">
-      <h2 id="h-shed">Futures <small id="shed-note">woven ahead of you</small></h2>
+    <section class="futures" aria-labelledby="h-futures">
+      <h2 id="h-futures">Futures <small id="futures-note">woven ahead of you</small></h2>
       <div class="fan" id="fan"></div>
       <p class="note" id="spec-note"></p>
     </section>
@@ -347,11 +347,11 @@ code { font: 12px var(--mono); background: var(--panel); padding: 1px 4px; borde
     <div>
       <h2>How to read it</h2>
       <ul>
-        <li class="only-cloth"><b>Cloth</b>: a network of 467 weights turns each point into a colour. Every input is on screen, so the picture is the model's whole behaviour.</li>
+        <li class="only-cloth"><b>Cloth</b>: a network of 467 weights turns each point of a square into a colour. Every pixel is an input. The picture samples the square, so what happens between pixels is not on screen.</li>
         <li class="only-text"><b>Text</b>: a network of 4,700 weights reads three characters and scores the next one. It was trained on Heedle's own documents. Each pick weaves a line from the new weights, on the same random draws as before, so a change in the text is a change in the model.</li>
         <li class="only-text"><b>Pattern</b>: the model's guess after each of its twelve commonest contexts. A larger square is a likelier character. Green rose, red fell.</li>
-        <li><b>Shafts</b>: the directions in weight space that change the outputs most per step. To first order, one unit of travel changes the outputs by one unit, whichever shaft you move.</li>
-        <li><b>Treadles</b>: named changes, each tied to the shafts. The percentage is the share of the named change these shafts can carry.</li>
+        <li><b>Shafts</b>: the directions in weight space that change the outputs most per step, on a fixed set of probe inputs. To first order, one unit of travel changes the outputs there by one unit, whichever shaft you move.</li>
+        <li><b>Treadles</b>: named changes, each tied to the shafts. The percentage is the share of the named change these shafts can carry, to first order, on the probes. A low share means these shafts cannot carry it. It does not mean the model cannot.</li>
         <li><b>Heddles</b>: inputs you pin. The loom is threaded around them, so pinned outputs do not shift to first order.</li>
       </ul>
     </div>
@@ -359,15 +359,16 @@ code { font: 12px var(--mono); background: var(--panel); padding: 1px 4px; borde
       <h2>What a beat checks</h2>
       <ul>
         <li>Weft's own gate: the weights stay within a fixed distance of the baseline and the budget covers the pick.</li>
-        <li class="only-cloth">A claim: no point of the cloth changes by more than the limit. A search looks for one point that breaks it, and it alone decides. If it finds one, the pick snaps and the cloth stays. Finding none is a sampled reading.</li>
-        <li class="only-text">A claim: no context changes by more than the limit. Every one of the 21,952 contexts is read, and that alone decides. If one breaks the claim, the pick snaps and the model stays. Finding none is complete, up to rounding.</li>
+        <li class="only-cloth">A claim: no point of the cloth changes by more than the limit since the last fell. A search looks for one point that breaks it, and it alone decides. If it finds one, the pick snaps and the cloth stays. Finding none is a sampled reading.</li>
+        <li class="only-text">A claim: no context changes by more than the limit since the last fell. Every one of the 21,952 contexts is read, and that alone decides. If one breaks the claim, the pick snaps and the model stays. Finding none is complete, up to rounding.</li>
+        <li>The claim is made pick by pick. Nothing here limits how far several picks together take the model from where it began, except the gate.</li>
         <li>Fresh probes, drawn from the new weights' hash after the pick is fixed, measure what the pick did. They do not decide it.</li>
         <li>The closer a pick comes to its limits, the longer you must hold to make it.</li>
       </ul>
     </div>
     <div>
       <h2>The record</h2>
-      <p>Every beat, snap and unpick is chained by hash into a draft. Anyone can replay it without this page: <code>python3 -m heedle verify draft.json</code></p>
+      <p>Every pick, snap and unpick is chained by hash into a draft. A beat the gate refuses records nothing. Anyone can replay a draft without this page: <code>python3 -m heedle verify draft.json</code></p>
       <div class="small"><button id="copy-draft">Copy draft</button><output id="copy-note" class="mono"></output></div>
       <textarea id="draft-out" readonly aria-label="The draft as JSON" spellcheck="false"></textarea>
       <p id="frame-note" class="mono"></p>

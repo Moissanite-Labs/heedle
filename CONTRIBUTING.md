@@ -6,11 +6,11 @@ By taking part you agree to follow the [Code of Conduct](CODE_OF_CONDUCT.md).
 
 ## Ground rules for evidence
 
-These matter more here than style does. They are weft's rules, and the [charter](CHARTER.md) repeats them.
+These matter more here than style does. The first and the fourth are weft's. The [charter](CHARTER.md) has the first three.
 
 1. **A stated rule is not a checked rule.** If a document says the instrument enforces something, link the test that checks it. Otherwise say it is not checked.
 2. **A passing test is not a proof.** [docs/theory.md](docs/theory.md) marks each statement as proved, tested, known or a reading. Keep the marks honest when you change a statement.
-3. **Say what is toy.** Every host here is small enough that its whole domain can be read. Do not describe a result on one as a law.
+3. **Say what is toy.** Every host here is small. Do not describe a result on one as a law.
 4. **Nothing live.** Tests and tools must not need keys or network access beyond installing packages.
 5. **Keep the two languages together.** A change to the mathematics goes into `heedle/` and `web/heedle.js` in the same pull request, with the vectors rebuilt.
 

@@ -23,7 +23,7 @@ Heedle exists so that this loop can be run by a person at the speed of a hand, o
 ## What it covers
 
 - **The mathematics** of knobs marked in units of behaviour, named changes with a share, pins, and tension. One implementation for any host that fits the contract.
-- **Hosts**: small models whose inputs a program can enumerate or search. Two exist: a cloth, where every input is a pixel, and a text model, where every input is three characters.
+- **Hosts**: small models whose inputs a program can enumerate or search. Two exist: a cloth, whose inputs are the points of a square, and a text model, whose inputs are contexts of three characters.
 - **Instruments**: pages a person can use, laid out as a weaving draft.
 - **The draft**: a hash-chained record of a steering session, and a verifier that replays it without the instrument.
 - **Conformance**: the reference in Python and the mirror in JavaScript are held to the same vectors.
@@ -31,30 +31,30 @@ Heedle exists so that this loop can be run by a person at the speed of a hand, o
 ## What it does not cover
 
 - **It does not run agents, tools or training.** It changes the weights of a small model along directions a person chose.
-- **It is not the Weft runtime.** It uses weft's gate unchanged and adds nothing to it.
+- **It is not the Weft runtime.** Its page runs weft's browser gate unchanged, its reference ports that gate, and it adds nothing to either.
 - **It does not hold experiment records.** Studies of Heedle belong in [weft-loom](https://github.com/Moissanite-Labs/weft-loom), preregistered there and reviewed there. This repository links them.
-- **It makes no claim about large models.** Every host here is a toy chosen so that its whole domain can be read. Whether the loop survives a model whose inputs cannot be enumerated is an open question, listed in the roadmap.
+- **It makes no claim about large models.** Every host here is a toy whose domain can be read whole or seen and searched. Whether the loop survives a model whose inputs cannot be enumerated is an open question, listed in the roadmap.
 - **It does not prove a person was present.** A draft records the gesture the instrument saw.
 
 ## Rules
 
-These follow the Siliconcordat and weft's rules for evidence.
+The first is weft's rule for evidence. The fourth and fifth follow the Siliconcordat's second principle, which says that learning a preference does not grant permission.
 
 1. **A stated rule is not a checked rule.** A document that says the instrument enforces something links the test that checks it, or says it is not checked.
 2. **A passing test is not a proof.** The theory marks what follows from the definitions, what a test checks on a toy host, and what is a reading.
 3. **A forecast never refuses.** Tension is a first-order prediction. Only the gate refuses, and only a refuted claim undoes a pick.
 4. **The person decides.** The model may propose a change, a name or a pin. Nothing commits without the person's gesture, and the closer a change comes to its limits the more deliberate the gesture must be.
 5. **Learning a preference does not grant permission.** An instrument may remember how a person likes to steer. Each pick still needs the gesture.
-6. **Every session can be replayed.** If a verifier cannot rebuild a weight root from the draft alone, that is a bug.
+6. **Every session can be replayed.** If a verifier cannot rebuild a weight root from the draft and the host it names, that is a bug. If a draft breaks a rule of the specification and still verifies, that is a security bug.
 7. **Say what is toy.** No document here describes a result on a toy host as a law.
 
 ## Relations
 
 | Project | What Heedle takes from it | What Heedle gives back |
 |---|---|---|
-| weft | The gate, vendored unchanged and pinned by hash | A place where a person can see the gate, the claim and the proved bound side by side |
+| weft | The browser gate, vendored unchanged and pinned by hash | A place where a person can see the gate, the claim and the proved bound side by side |
 | weft-loom | The calibration theory, the committed-behaviour-change design, the note and the first record | Hosts and an instrument for further records |
-| ethos | The rule that a preference is not a permission | A form a steering preference could travel in: a tie-up and a treadling |
+| ethos | The idea of preferences that travel between agent environments | A form a steering preference could travel in: a tie-up and a treadling |
 | exo | The idea of approvals and a visible trace | Approvals that scale with a forecast, and a draft as the trace |
 | synmerit | The idea of signed records of contribution | Per-pick records that two people could divide exactly, to first order, along orthogonal shafts |
 

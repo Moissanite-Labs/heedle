@@ -33,7 +33,7 @@ export function makeClothHost(seed = 7) {
     kind: "cloth/1",
     seed,
     w0,
-    rInvariant: 2.0,
+    radius: "2.0",          // the gate's radius and the claim's limit, as decimal strings
     tau: "0.5",
     budget: 24,
     cost: 1,
@@ -134,7 +134,12 @@ export function makeClothHost(seed = 7) {
       }
       return { worst: bestVal, witness: bestPt, rows, exhaustive: false };
     },
-    witnessInputs: (witness) => Float64Array.from(witness),
+    /** Every point of the square is an input, so every point drawn is one too. */
+    provedInputs: () => grid(64),
+    witnessInputs(witness) {
+      if (witness.length !== 2 || !witness.every((v) => Number.isFinite(v) && v >= 0.0 && v <= 1.0)) throw new Error("witness outside the unit square");
+      return Float64Array.from(witness);
+    },
     descriptor: () => ({ kind: "cloth/1", seed, w0_root: hd.weightRoot(host, w0) }),
   };
   return host;

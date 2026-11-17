@@ -55,8 +55,24 @@ def mulberry32(seed: int) -> Callable[[], float]:
     return draw
 
 
+def _only_strings_and_integers(obj) -> None:
+    if isinstance(obj, dict):
+        for k, v in obj.items():
+            if not isinstance(k, str):
+                raise ValueError("a hashed object has a key that is not a string")
+            _only_strings_and_integers(v)
+    elif isinstance(obj, (list, tuple)):
+        for v in obj:
+            _only_strings_and_integers(v)
+    elif isinstance(obj, bool) or not isinstance(obj, (str, int)):
+        raise ValueError(f"only strings and integers are hashed, not {obj!r}")
+
+
 def canonical_json(obj) -> bytes:
-    return json.dumps(obj, sort_keys=True, separators=(",", ":"), allow_nan=False).encode()
+    """JSON with sorted keys and no spaces, of strings, integers and lists of them only.
+    Anything else is refused: a fraction prints differently in different languages."""
+    _only_strings_and_integers(obj)
+    return json.dumps(obj, sort_keys=True, separators=(",", ":")).encode()
 
 
 def sha256_hex(data: bytes) -> str:
@@ -433,7 +449,9 @@ def claim_id(kind: str, w0_root: str, w1_root: str, tau: str, pins: Sequence[int
 
 def probe_seed(w1_root: str, claim: str, test_set: str = "admission") -> bytes:
     """[K] The seed of the probes drawn after a candidate is fixed, as CBC v1 orders it: it
-    hashes the candidate's root and the claim, so a proposer cannot fit probes not yet seen."""
+    hashes the candidate's root and the claim, so the probes of a candidate are fixed only
+    once the candidate is. A proposer can still compute the probes of any candidate it
+    considers, which is one reason probes measure a pick and never decide one."""
     return hashlib.sha256(DOMAIN + b"probes:" + test_set.encode() + b":" + w1_root.encode()
                           + b":" + claim.encode()).digest()
 
@@ -453,6 +471,12 @@ def move_from_b64(s: str, P: int) -> np.ndarray:
     if d.shape != (P,):
         raise ValueError("a move must hold one float64 per weight")
     return d
+
+
+def genesis_id(host: dict, gate: dict) -> str:
+    """What the first event of a draft chains from: the hash of the draft's header. It binds
+    every event to the host and to the session's limits."""
+    return sha256_hex(DOMAIN + b"draft:" + canonical_json({"schema": "heedle-draft/1", "host": host, "gate": gate}))
 
 
 def event_id(event: dict) -> str:

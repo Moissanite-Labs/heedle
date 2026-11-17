@@ -44,7 +44,7 @@ let loom, view, host;
 let treadling = {}, shaftTravel = {}, hidden = null;
 let active = { kind: "treadle", key: null };
 let lastEvent = null, selectedRoot = null, pending = null;
-let dirty = true, isSharp = false, sharpAt = 0, certified = 0, frameMs = 0;
+let dirty = true, isSharp = false, sharpAt = 0, certified = 0, provedEnc = null, frameMs = 0;
 let fan = { key: "", items: [] };
 const spec = { woven: 0, taken: 0, discarded: 0 };
 
@@ -70,13 +70,13 @@ async function openLoom(next, { fresh = false } = {}) {
   if (!entry.session || fresh) {
     const h = entry.make(entry);
     entry.session = { loom: new hd.Loom({ host: h, shafts: Math.min(16, entry.session?.loom.shafts ?? 16) }), lastEvent: null };
-    entry.certified = hd.certifiedRadius(h, h.w0, h.encode(h.elsewhereInputs()), Number(h.tau));
+    entry.proved = h.encode(h.provedInputs());
   }
   loom = entry.session.loom;
   host = loom.host;
   view = entry.view;
   lastEvent = entry.session.lastEvent;
-  certified = entry.certified;
+  provedEnc = entry.proved;
   treadling = Object.fromEntries(host.treadleNames.map((n) => [n, 0]));
   shaftTravel = {};
   hidden = null;
@@ -86,7 +86,6 @@ async function openLoom(next, { fresh = false } = {}) {
   if (entry.seed) $("seed-out").value = entry.seed;
   $("r-out").textContent = fmt(loom.rInvariant, 1);
   $("tau-out").textContent = loom.tau;
-  $("selv-ball").title = `Distance from the baseline, against the gate's radius. The mark is the radius, ${fmt(certified, 3)}, inside which the limit is proved for every input checked.`;
   const slot = $("slot");
   slot.replaceChildren();
   view.mount(slot, { loom: () => loom, setPins, invalidate });
@@ -189,6 +188,9 @@ function afterFellChange() {
   for (const name of host.treadleNames) $(`share-${name}`).textContent = pct(loom.tie.share[name]);
   $("f-pins").textContent = `${loom.pins.length} raised · ${loom.shed.openDimensions} ways open`;
   view.onFell(loom);
+  // The proved edge, at this fell: the longest move from here for which Theorem 1 keeps
+  // every input read within the limit of where it is now.
+  certified = hd.certifiedRadius(host, loom.fell.w, provedEnc, loom.tauValue);
   const picks = loom.path().picks.length;
   $("fell-note").textContent = `the fell is ${loom.fell.root.slice(0, 10)}… · ${picks} ${picks === 1 ? "pick" : "picks"} in the cloth`;
   $("draft-out").value = JSON.stringify(loom.exportDraft());
@@ -219,6 +221,8 @@ function showPending() {
   const { a } = pending;
   const resting = isResting();
   $("f-length").textContent = fmt(a.length);
+  $("f-proved").textContent = fmt(certified);
+  $("f-proved").parentElement.title = `The longest move from this fell for which the limit is proved ${view.provedText}. Longer moves are checked, not proved.`;
   $("f-pred").textContent = fmt(a.predicted);
   $("f-worst").textContent = `${fmt(a.predictedMax)} of ${loom.tau}`;
   $("f-tension").textContent = fmt(a.tension, 2);
@@ -229,7 +233,6 @@ function showPending() {
   const ball = $("selv-ball"), beh = $("selv-beh");
   ball.firstElementChild.style.height = pct(Math.min(1, a.ball));
   ball.dataset.zone = a.gate.accepted ? (a.ball < 0.3 ? "auto" : "shared") : "refused";
-  ball.lastElementChild.style.bottom = pct(certified / loom.rInvariant);
   beh.firstElementChild.style.height = pct(Math.min(1, a.behaviour));
   beh.dataset.zone = a.behaviour > 1 ? "over" : a.behaviour < 0.3 ? "auto" : "shared";
   const beat = $("beat");
@@ -280,7 +283,7 @@ function tendFan() {
     spec.discarded += fan.items.filter((it) => it.woven && !it.taken).length;
     fan.key = key;
     buildFan();
-    $("shed-note").textContent = hidden ? "none while a hidden move is pending"
+    $("futures-note").textContent = hidden ? "none while a hidden move is pending"
       : `along ${active.kind === "shaft" ? `shaft ${active.key + 1}` : `the ${active.key} treadle`}, woven ahead of you`;
     return true;
   }
@@ -349,11 +352,11 @@ function showLamp(ev) {
   const where = view.witnessText(loom, c.witness);
   const read = c.exhaustive ? `All ${c.rows.toLocaleString("en")} ${view.inputWord}s were read.` : `A search read ${c.rows.toLocaleString("en")} ${view.inputWord}s.`;
   if (ev.kind === "snap") {
-    lines.push(p(`<strong>Pick ${ev.seq} snapped.</strong> ${read} One would have moved by ${fmt(c.worst)}, over the limit of ${ev.tau}: ${where}. The model stays where it was and the attempt stays on the record.`));
+    lines.push(p(`<strong>Pick ${ev.seq} snapped.</strong> ${read} One would have moved by ${fmt(c.worst)} from where it was at the fell, over the limit of ${ev.tau}: ${where}. The model stays where it was and the attempt stays on the record.`));
   } else if (c.exhaustive) {
-    lines.push(p(`<strong>Pick ${ev.seq} admitted.</strong> ${read} The one that moved most, ${where}, moved by ${fmt(c.worst)}, under the limit of ${ev.tau}. That is every input this model has, in float64.`));
+    lines.push(p(`<strong>Pick ${ev.seq} admitted.</strong> ${read} The one that moved most, ${where}, moved by ${fmt(c.worst)} from where it was at the last fell, under the limit of ${ev.tau}. That is every input this model has, in float64.`));
   } else {
-    lines.push(p(`<strong>Pick ${ev.seq} admitted.</strong> ${read} None moved more than ${fmt(c.worst)}, under the limit of ${ev.tau}. That is a sampled reading: a larger search could still find one.`));
+    lines.push(p(`<strong>Pick ${ev.seq} admitted.</strong> ${read} None moved more than ${fmt(c.worst)} from where it was at the last fell, under the limit of ${ev.tau}. That is a sampled reading: a larger search could still find one.`));
   }
   lines.push(p(`Predicted change ${fmt(r.predicted)} on the fit probes. Measured ${fmt(c.realized)} on ${c.probes} probes drawn after the pick was fixed.`));
   for (const [name, d] of Object.entries(r.delivered)) {

@@ -70,6 +70,7 @@ def vectors(host, pins, scale, some_inputs, hide_radius) -> dict:
             "fresh_inputs": np.asarray(fresh).tolist(),
             "event_id": core.event_id({"seq": 1, "kind": "pick", "prev": "genesis", "parent_root": root0, "root": root1,
                                        "move_sha256": "00" * 32, "pins": [int(p) for p in pins], "gesture": "hold", "tau": host.tau}),
+            "genesis_id": core.genesis_id(host.descriptor(), host.gate_header()),
             "open_dimensions": int(shed.open_dimensions),
             "dispute_rows": int(rows),
             "dispute_exhaustive": bool(exhaustive),

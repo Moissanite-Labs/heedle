@@ -46,6 +46,10 @@ each("the weights and every hash match the reference bit for bit", (b) => {
   assert.deepEqual(Array.from(host.freshInputs(hd.probeSeed(vec.exact.w1_root, cid), 8)), vec.exact.fresh_inputs.flat());
   const ev = { seq: 1, kind: "pick", prev: "genesis", parent_root: vec.exact.w0_root, root: vec.exact.w1_root, move_sha256: "00".repeat(32), pins: vec.pins, gesture: "hold", tau: host.tau };
   assert.equal(hd.eventId(ev), vec.exact.event_id);
+  const gate = { r_invariant: host.radius, budget: host.budget, cost: host.cost, tau: host.tau };
+  assert.equal(hd.genesisId(host.descriptor(), gate), vec.exact.genesis_id);
+  assert.equal(new hd.Loom({ host, shafts: 2 }).genesis, vec.exact.genesis_id);
+  assert.throws(() => hd.canonicalJson({ tau: 0.5 }), /only integers and strings/);
 });
 
 test("the built-in SHA-256 agrees with Node's", () => {
@@ -199,13 +203,13 @@ each("a session: light picks weave on release, tense ones need a hold, a refuted
   assert.equal(loom.fell.root, one.root);
   assert.deepEqual(loom.path().picks.map((e) => e.seq), [1]);
   loom.events.forEach((e, i) => {
-    assert.equal(e.prev, i ? loom.events[i - 1].id : "genesis");
+    assert.equal(e.prev, i ? loom.events[i - 1].id : loom.genesis);
     assert.equal(hd.eventId(e), e.id);
   });
 });
 
 each("weft's gate refuses a pick that leaves the ball, and spends nothing", (b) => {
-  const host = { ...b.host, rInvariant: 0.02 };
+  const host = { ...b.host, radius: "0.02" };
   const loom = new hd.Loom({ host });
   const d = loom.moveFor({}, { 0: 0.5 });
   assert.equal(loom.assess(d).zone, "refused");

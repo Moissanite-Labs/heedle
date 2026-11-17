@@ -10,7 +10,7 @@ A [Moissanite Labs](https://github.com/Moissanite-Labs) project, and part of [ML
 
 ---
 
-Weft's first design conversation described a loom in four layers. The third, the Heedle, is where a person and a model meet. Nothing built it. This repository does.
+Weft's first design conversation described a loom in four layers. The third, the Heedle, is where a person and a model meet. A prototype in weft-loom built a first instrument for it. This repository builds the layer.
 
 Heedle is an instrument for one loop, made by hand and checked by a program:
 
@@ -22,7 +22,7 @@ Heedle is an instrument for one loop, made by hand and checked by a program:
 
 It starts from three ideas:
 
-- **A knob is a claim with a handle.** Knobs are marked in units of behaviour. A named change comes with a number that says how much of the name the model can deliver. A committed change makes a claim, and the instrument looks for the one input that breaks it.
+- **A knob is a claim with a handle.** Knobs are marked in units of behaviour. A named change comes with a number that says how much of the name the directions in use can carry, to first order. A committed change makes a claim, and the instrument looks for the one input that breaks it.
 - **A forecast never refuses.** The instrument predicts how close a change comes to its limits and asks for a more deliberate gesture the closer it gets. Only the gate refuses, and only a refuted claim undoes a change.
 - **Every session can be replayed.** A session is a hash-chained record. A separate program rebuilds every set of weights from it and re-checks every verdict.
 
@@ -33,10 +33,10 @@ It starts from three ideas:
 | The model | a point of the unit square to a colour | three characters to the next one |
 | Weights | 467 | 4,700 |
 | Where it came from | drawn from a seed | trained on this repository's own documents |
-| What you see | a cloth: every input is a pixel | a line of text per change, and the model's guesses after its commonest contexts |
+| What you see | a cloth: every pixel is an input, and the picture samples the square | a line of text per change, and the model's guesses after its commonest contexts |
 | What a commit is checked on | a search of 9,600 points: a sampled reading | all 21,952 contexts: an exhaustive reading |
 
-Both are toys, chosen so that the whole domain of the model can be read. See [what it is not](#what-it-is-not).
+Both are toys. The text model's whole domain can be read. The cloth's can be seen at the resolution of the screen and searched. See [what it is not](#what-it-is-not).
 
 ## Quick start
 
@@ -68,8 +68,8 @@ Copy a session out of the page with **Copy draft**, save it, and verify it the s
 |---|---|---|---|
 | Core | [`heedle/core.py`](heedle/core.py), [`web/heedle.js`](web/heedle.js) | The mathematics for any host: shafts, treadles, pins, the proved bound, weight roots, claims, the loom | runs · tested in both languages against shared vectors |
 | Hosts | [`heedle/hosts.py`](heedle/hosts.py), [`web/hosts/`](web/hosts) | `cloth/1` and `text/1` | runs · tested |
-| Gate | [`web/vendor/invariant-gate.js`](web/vendor/invariant-gate.js) | weft's gate, copied unchanged and pinned by hash | runs · tested on weft's vectors |
-| Draft | [`docs/protocol.md`](docs/protocol.md), [`heedle/draft.py`](heedle/draft.py) | The record of a session and its verifier | runs · tested, including tampering |
+| Gate | [`web/vendor/invariant-gate.js`](web/vendor/invariant-gate.js), `core.verify_weight_update_safety` | The page runs weft's browser gate, copied unchanged and pinned by hash. The Python reference ports its unmasked path | runs · tested on weft's unmasked vectors, with the same deferrals as weft's browser test |
+| Draft | [`docs/protocol.md`](docs/protocol.md), [`heedle/draft.py`](heedle/draft.py) | The record of a session and its verifier | runs · every rule of the specification has a tampered draft that is caught |
 | Looms | [`web/`](web) | One page, two views | runs · checked by hand in one browser |
 | Text model | [`hosts/text-v1.json`](hosts/text-v1.json) | The trained text host and the text it was trained on | fixed artefact, with its hashes |
 
@@ -79,7 +79,7 @@ Copy a session out of the page with **Copy draft**, save it, and verify it the s
 
 Heedle uses weaving names on purpose: *shaft, treadle, tie-up, heddle, shed, pick, fell*. To first order, the change a person makes is a product of three things, and a weaver's draft is a product of the same three. The names follow from that. They prove nothing. [docs/vocabulary.md](docs/vocabulary.md) says what each one names in the code.
 
-The project holds itself to weft's rules:
+The project holds itself to three rules. The first is weft's:
 
 - A **stated** rule is not a **checked** rule. Documents link the test that checks a claim, or say it is not checked.
 - A **passing test** is not a **proof**. [docs/theory.md](docs/theory.md) marks each statement as proved, tested on a toy, known, or a reading.
@@ -87,7 +87,7 @@ The project holds itself to weft's rules:
 
 ## What it is not
 
-- **Not a way to steer a large model.** Both hosts are small enough to hold a Jacobian for and to read whole. Whether any of this survives a model that is neither is the first open question in the roadmap.
+- **Not a way to steer a large model.** Both hosts are small enough to differentiate in a browser, and one is small enough to read whole. Whether any of this survives a model that is neither is the first open question in the roadmap.
 - **Not evidence that people steer better with it.** No person has used it in a study.
 - **Not a proof that a person was present.** A record holds the gesture the page saw.
 - **Not a language model worth the name.** The text host knows three characters of context. It writes the shape of English and means nothing.
@@ -110,7 +110,7 @@ One study exists, in weft-loom: [`experiments/heddle-knob-range-2026-11-17`](htt
 
 | Repository | What it holds |
 |---|---|
-| [weft](https://github.com/Moissanite-Labs/weft) | The runtime. Heedle uses its gate unchanged. |
+| [weft](https://github.com/Moissanite-Labs/weft) | The runtime. Heedle's page runs its browser gate unchanged. |
 | [weft-loom](https://github.com/Moissanite-Labs/weft-loom) | The design note Heedle came from, the calibration theory and committed-behaviour-change design it rests on, and its first record. Studies of Heedle go there. |
 | [weft-corpus](https://github.com/Moissanite-Labs/weft-corpus) | The design conversation that named the layer. |
 | [Spaceship IDE](https://github.com/chuanqisun/spaceship) | By Chuanqi Sun. The four interaction ideas Heedle gives counterparts to. No code from it is used. |

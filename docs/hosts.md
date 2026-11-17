@@ -25,9 +25,9 @@ A host provides:
 | `fresh_inputs(seed, n)` | Probes derived from a hash, using integer arithmetic only |
 | `treadle_pattern(name, inputs, y)` | The output pattern a named change asks for |
 | `dispute(w0, w1)` | A search for the one input that changes most, and whether the search was exhaustive |
-| `witness_inputs(witness)` | The single input a recorded witness names, or an error if it is outside the domain |
+| `witness_inputs(witness)`, `proved_inputs` in the page | The single input a recorded witness names, or an error if it is outside the domain. The inputs on which the page evaluates the proved bound |
 | `descriptor()` | What a draft needs in order to rebuild the baseline |
-| `r_invariant`, `tau`, `budget` | The gate's radius, the claim's limit and the number of picks allowed |
+| `radius`, `tau`, `budget`, `cost` | The gate's radius and the claim's limit, as decimal strings, the number of picks allowed and the cost of one |
 
 Three rules:
 
@@ -48,9 +48,9 @@ A point of the unit square goes in. Three numbers come out and are shown as a co
 | Pins | cells of a 64 by 64 lattice |
 | Treadles | `warm`, `light`, `tilt`, `contrast`, `check` |
 | Dispute | reads a 96 by 96 lattice, then climbs from the four best cells. A sampled reading |
-| Limits | the gate's radius is 2.0 and the claim's limit is 0.5 |
+| Limits | the gate's radius is 2.0 and the claim's limit is 0.5. They belong to the host: a draft cannot choose others |
 
-Every input is on the screen at once, so the picture is the model's whole behaviour. That is why the cloth is the first host: each idea in the theory can be seen. The ball and the ellipsoid, the room between probes, a pin and its neighbourhood are all visible as changes to one picture.
+Every pixel is an input, and the picture samples the square at 64 or 128 points a side. The domain itself is every point of the square, which no picture and no search reads whole. The cloth is the first host because each idea in the theory can be seen on it. The ball and the ellipsoid, the room between probes, a pin and its neighbourhood are all visible as changes to one picture.
 
 The treadle `check` asks for a fine checkerboard. With sixteen shafts its share is near 0.01. It is kept as a foil: a name the shafts in use cannot carry, shown as such.
 
@@ -74,11 +74,11 @@ Three characters go in. A score for each possible next character comes out.
 | Dispute | reads every context. Exhaustive |
 | Limits | the gate's radius is 2.0 and the claim's limit is 1.0 |
 
-This is the smallest thing that can be called a language model, and it is here for one reason: its domain is finite and small enough to read whole. On the cloth an admitted pick has passed a search. On this host an admitted pick has been checked on every input the model has.
+This is about as small as a model of text gets, and it is here for one reason: its domain is finite and small enough to read whole. On the cloth an admitted pick has passed a search. On this host an admitted pick has been checked on every input the model has.
 
 ### How it was made
 
-`tools/train_text_host.py` takes the Markdown documents of this repository, reduces them to the 28 symbols, counts how often each context is followed by each character, and fits the network to those counts. The text it used is kept as `hosts/text-v1.corpus.txt`, with its hash in the host file, so the training text is fixed even when the documents change.
+`tools/train_text_host.py` takes nine documents of this repository (the charter, the contributing and reviewing guides, and the six files in `docs/`), removes fenced code, reduces them to the 28 symbols, counts how often each context is followed by each character, and fits the network to those counts. The text it used is kept as `hosts/text-v1.corpus.txt`, with its hash in the host file, so the training text is fixed even when the documents change.
 
 The training text has 44,520 characters and uses 2,499 of the 21,952 contexts. On that text the model spends 1.96 bits per character, against 4.09 for a model that knows only how common each character is. That is a fit to its own training text, not a test. The 48 commonest contexts are the fit probes. The next 512 are held out, and fresh probes are drawn from them in proportion to their use. The eight commonest are the probes a proposer is assumed to know.
 
@@ -94,7 +94,7 @@ The model is named `text-v1`. Retraining gives a different model with a differen
 | `echo` | the character just written, up | doubled letters |
 | `sharp` | the model's current scores, scaled | more of whatever it already prefers |
 
-The first three ask for the same thing in every context, so a change to the output biases carries most of them. `echo` and `sharp` depend on the context. Their shares say how much of that the shafts can carry.
+The first three ask for the same thing in every context. A move of the output biases alone would deliver each of them exactly, but at a length of about 5.3 per unit of travel, outside the gate's radius of 2.0. With sixteen shafts the instrument carries 0.39, 0.30 and 0.16 of them at the baseline. `echo` and `sharp` depend on the context, and sixteen shafts carry less than 0.1 of each.
 
 ### What the instrument shows
 

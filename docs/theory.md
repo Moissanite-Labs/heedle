@@ -35,7 +35,7 @@ Take the eigenvectors `v_i` of `G` with eigenvalues `lam_i`, largest first. They
 
 So a knob on a shaft can be marked in **travel**, a unit of behaviour, and one unit means the same on every knob. A stiff shaft has a short throw in weight space and a slack one a long throw.
 
-[P] Each shaft has a pattern. With `J v_i = s_i u_i` and `u_i` of unit length, the output change of one unit of travel is `u_i sqrt(n m)`, a pattern of unit root mean square.
+[P] Each shaft has a pattern. With `J v_i = s_i u_i` and `u_i` of unit length, the output change of one unit of travel is, to first order, `u_i sqrt(n m)`, a pattern of unit root mean square.
 
 [T] `tests/test_core.py::test_travel_is_measured_in_behaviour` checks the first statement on both hosts.
 
@@ -85,7 +85,7 @@ A **heddle** is a pinned input: its outputs are to be held still. Let `J_pin` be
 
 [P] A move in the shed leaves the pinned outputs unchanged to first order.
 
-The instrument threads the loom around the pins: its shafts are the eigenvectors of `G` restricted to the shed. [P] Each such shaft lies in the shed. [P] Restricting to the shed cannot raise an eigenvalue, so pins never add reach.
+The instrument threads the loom around the pins: its shafts are the eigenvectors of `G` restricted to the shed. [P] Each such shaft lies in the shed. [P] Restricting to the shed cannot raise an eigenvalue, so no shaft gets stiffer. A treadle's share is another matter: at a fixed number of shafts it can rise when pins are added, because the shed's first shafts are not the open ones. [T] It does, for `tilt` on the cloth and `echo` on the text host, in `vectors/`.
 
 [T] What reaches a pin is second order: halving a move quarters the leak (`test_what_reaches_the_pins_is_second_order`).
 
@@ -95,7 +95,7 @@ The instrument threads the loom around the pins: its shafts are the eigenvectors
 
 A pick has three edges.
 
-1. **Proved.** [K] Theorem 1 of the calibration theory. Its proof needs only a bound on the units' slope, here 1 for tanh. Inside radius `R` no input's output moves by more than `R c(x) + R² q(x) + R³ k(x)`, with `c`, `q` and `k` computed at the fell. Centring the outputs is a projection, so the bound holds for centred outputs. [T] No move tried in `test_the_proved_bound_is_never_exceeded` exceeds it.
+1. **Proved.** [K] Theorem 1 of the calibration theory. Its proof needs only a bound on the units' slope, here 1 for tanh. For a move of length at most `R` from a centre, no input's output moves by more than `R c(x) + R² q(x) + R³ k(x)`, with `c`, `q` and `k` computed at the centre. Centring the outputs is a projection, so the bound holds for centred outputs. To bound a pick, the centre must be the fell the pick starts from. The page computes it there, on 4,096 points of the cloth or on every context of the text host, and shows the longest move the bound allows. [T] No move tried in `test_the_proved_bound_is_never_exceeded` exceeds it.
 2. **Predicted.** The first-order change at the worst fit probe, against the claim's limit `tau`.
 3. **Permitted.** Weft's gate: `‖w − w₀‖ ≤ R` against the session's baseline, and `budget ≥ cost > 0`.
 
@@ -123,7 +123,7 @@ When a person beats a move in:
 
 1. The gate decides on the weights. A refusal records nothing and spends nothing.
 2. The candidate gets a weight root. [T] It is the root of committed-behaviour-change v1, byte for byte (`test_weight_root_is_the_cbc_weight_root`, which reimplements that scheme independently).
-3. The pick makes a **claim**: no input in the host's domain changes by more than `tau`.
+3. The pick makes a **claim**: no input in the host's domain changes by more than `tau` from where it was at the fell. The claim is made pick by pick. Nothing limits how far several picks together take a model from its baseline, except the gate.
 4. Probes are derived from the hash of the root and the claim, so after the candidate is fixed. They measure what the pick did. They do not decide it.
 5. The host's **dispute** looks for one input that breaks the claim. If it finds one, the pick **snaps**: the fell does not move, the input is kept as the reason, and the budget is spent. If it finds none, the pick is admitted.
 
@@ -145,19 +145,21 @@ How much an admission says depends on the host's domain.
 
 Every pick, snap and unpick is an event in a hash chain. An event commits to exact things only: its place in the chain, the roots before and after, the hash of the move's bytes, the pins, the gesture and `tau`. The move travels as float64 bytes.
 
-[P] The fell after a pick is the fell before it plus the recorded move, added in float64. Addition of two float64 numbers is the same on every machine, so a verifier that starts from the same baseline reaches the same bytes and the same root.
+[K] The fell after a pick is the fell before it plus the recorded move, added in float64. Addition of two float64 numbers is fixed by IEEE 754, so a verifier that starts from the same baseline reaches the same bytes and the same root. [T] `tests/test_draft.py` replays drafts made in JavaScript to the same roots in Python.
 
-Readings in an event are not trusted. A verifier recomputes them.
+A draft's header states the session's limits. They must be the host's, and the first event chains from the header's hash, so a draft cannot choose looser limits for itself.
+
+A verifier recomputes what decides: distances, the gate's verdict, the change on the fresh probes, the change at the witness, and for a pick the dispute itself. What the instrument showed a person before a beat is kept as an annotation. A verifier does not check annotations.
 
 [I] A draft records the gesture the instrument saw. Nothing proves a person made it.
 
-[T] `tests/test_draft.py` replays drafts made by the JavaScript loom and catches a changed move, a reordered event, a snap whose witness does not refute, and a gesture too light for its tension.
+[T] Every rule of the specification has a tampered draft in `tests/test_draft.py` that breaks it and is caught, and a test fails if the verifier gains a rule without one.
 
 ## 11. What has been measured
 
 One record exists: `experiments/heddle-knob-range-2026-11-17` in weft-loom, made on the cloth host of the prototype this repository grew from. Seventeen predictions were fixed before the run, on 12 random and 12 fitted hosts. Sixteen were confirmed in each arm. Two were not, and the record says which.
 
-In short, on those hosts: a treadle's label held within a factor 1.1 up to a travel of 0.6 on 23 of 24 hosts. No pick with tension below 0.7 was refuted and all but one with tension 1.0 or more were. Sixteen pins closed a tenth of the directions and left between 0.28 and 0.60 of the named reach. A move hidden from sixteen known probes changed the rest of the cloth between 4.6 and 13 times more than those probes showed.
+In short, on those hosts: for treadles whose share was at least 0.2, the gain measured on held-out inputs was within a factor 1.1 of the gain the tie-up promised, up to a travel of 0.6, on 23 of 24 hosts. The foil `check` was never in that reading, and `contrast` was out of it on at least half the fitted hosts. No pick with tension below 0.7 was refuted and all but one with tension 1.0 or more were. Sixteen pins closed a tenth of the directions and left between 0.28 and 0.60 of the named reach. A move hidden from sixteen known probes changed the rest of the cloth between 4.6 and 13 times more than those probes showed.
 
 Nothing has been measured on the text host. Nothing has been measured with a person.
 

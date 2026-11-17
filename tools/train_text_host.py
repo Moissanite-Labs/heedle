@@ -36,7 +36,7 @@ SOURCES = ["CHARTER.md", "CONTRIBUTING.md", "REVIEWING.md"]
 INIT = {"W1": 0.5, "b1": 0.1, "W2": 0.4, "b2": 0.1, "W3": 0.4, "b3": 0.1}
 STEPS, WEIGHT_DECAY = 6000, 2e-4
 FIT, KNOWN, HELD = 48, 16, 512
-R_INVARIANT, TAU = 2.0, "1.0"
+R_INVARIANT, TAU = "2.0", "1.0"
 
 
 def corpus_text() -> tuple[str, list[dict]]:

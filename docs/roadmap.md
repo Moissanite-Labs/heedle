@@ -1,6 +1,6 @@
 # Roadmap
 
-What could grow from here. Each entry is an idea. Each says what exists, what it would take to find out whether the idea is a good one, and what would count against it. Nothing here is adopted.
+What could grow from here. Each entry is an idea. Each says what exists and what it would take to find out whether the idea is a good one. The first two also say what would count against them. Nothing here is adopted.
 
 The entries began as the twelve seeds of the design note in weft-loom. Where this repository has taken a step, the entry says so.
 
@@ -44,7 +44,7 @@ The entries began as the twelve seeds of the design note in weft-loom. Where thi
 
 ### 6. Sound and touch
 
-**Exists.** Nothing. The corpus imagined feeling a system's strain. Spaceship's sound grows softer as its knob moves faster.
+**Exists.** Nothing. The corpus imagined feeling a system's strain. Spaceship's word tick grows softer the faster its main knob is dragged.
 
 **Next.** Tension as pitch. A snap as a snap. Test: with eyes on the drawdown only, does a person stop before a pick would be refuted?
 
@@ -64,7 +64,7 @@ The entries began as the twelve seeds of the design note in weft-loom. Where thi
 
 ### 9. Signed drafts
 
-**Exists.** A hash chain. No signatures.
+**Exists.** A hash chain that starts from the draft's header. No signatures, so anyone can write a draft that verifies by making picks that obey the rules.
 
 **Next.** A signature per event, by the person's key and the instrument's. Then a draft can say who stands behind each gesture, though still not that a hand made it.
 

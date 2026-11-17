@@ -578,29 +578,43 @@ export function hiddenMove(sh, w, known, elsewhere, radius, iterations = 60) {
  * bound. One value per input.
  */
 export function certifiedBound(sh, w0, enc, radius) {
+  const { c, q, k } = boundTerms(sh, w0, enc), r = radius;
+  return c.map((ci, i) => r * ci + r * r * q[i] + r * r * r * k[i]);
+}
+
+/** The three coefficients of the bound, per input, at the centre `w0`. */
+export function boundTerms(sh, w0, enc) {
   const { H, M, offsets: o } = sh;
   const s2 = largestSingularValue(w0.subarray(o.W2[0], o.W2[1]), H, H);
   const s3 = largestSingularValue(w0.subarray(o.W3[0], o.W3[1]), M, H);
-  const out = new Float64Array(enc.n);
+  const c = new Float64Array(enc.n), q = new Float64Array(enc.n), k = new Float64Array(enc.n);
   const h1 = new Float64Array(H), h2 = new Float64Array(H);
-  const g = GAMMA, r = radius;
+  const g = GAMMA;
   for (let i = 0; i < enc.n; i++) {
     hidden(sh, w0, enc, i, h1, h2);
     let xx = 0.0;
     for (let t = 0; t < enc.nnz; t++) xx += enc.val[i * enc.nnz + t] ** 2;
     const a0 = Math.sqrt(xx + 1.0), a1 = Math.sqrt(dot(h1, h1) + 1.0), a2 = Math.sqrt(dot(h2, h2) + 1.0);
-    const c = Math.sqrt((g * g * s3 * s2 * a0) ** 2 + (g * s3 * a1) ** 2 + a2 ** 2);
-    const q = (g * g * (s2 + s3) * a0 + g * a1) / 2.0;
-    const k = (g * g * a0) / (3.0 * Math.sqrt(3.0));
-    out[i] = r * c + r * r * q + r * r * r * k;
+    c[i] = Math.sqrt((g * g * s3 * s2 * a0) ** 2 + (g * s3 * a1) ** 2 + a2 ** 2);
+    q[i] = (g * g * (s2 + s3) * a0 + g * a1) / 2.0;
+    k[i] = (g * g * a0) / (3.0 * Math.sqrt(3.0));
   }
-  return out;
+  return { c, q, k };
 }
 
-/** The largest radius at which the proved bound keeps every input of `enc` within `tau`. */
+/**
+ * The largest length of a move from `w0` at which the proved bound keeps every input of
+ * `enc` within `tau` of where it was at `w0`. It is a statement about those inputs, and about
+ * change from `w0`: to bound a pick's change, `w0` must be the fell the pick starts from.
+ */
 export function certifiedRadius(sh, w0, enc, tau) {
+  const { c, q, k } = boundTerms(sh, w0, enc);
   const limit = tau * Math.sqrt(sh.M);
-  const worst = (r) => certifiedBound(sh, w0, enc, r).reduce((a, b) => Math.max(a, b), 0.0);
+  const worst = (r) => {
+    let top = 0.0;
+    for (let i = 0; i < c.length; i++) top = Math.max(top, r * c[i] + r * r * q[i] + r * r * r * k[i]);
+    return top;
+  };
   let lo = 0.0, hi = 1.0;
   for (let i = 0; i < 60; i++) {
     const mid = 0.5 * (lo + hi);
@@ -738,6 +752,11 @@ export function seededUint32(seed, i, j = 0) {
   return new DataView(sha256(buf).buffer).getUint32(4 * j, false);
 }
 
+/** What the first event of a draft chains from: the hash of the draft's header. */
+export function genesisId(host, gate) {
+  return toHex(sha256(ascii(`${DOMAIN}draft:${canonicalJson({ schema: "heedle-draft/1", host, gate })}`)));
+}
+
 export function eventId(event) {
   const body = {};
   for (const k of ["seq", "kind", "prev", "parent_root", "root", "move_sha256", "pins", "gesture", "tau"]) {
@@ -791,8 +810,7 @@ export function gestureSuffices(gesture, zone) {
 export class Loom {
   constructor({ host, shafts = 16 }) {
     this.host = host;
-    this.sh = host;                       // a host carries its own shape
-    this.rInvariant = host.rInvariant;
+    this.rInvariant = Number(host.radius);
     this.cost = host.cost;
     this.tau = String(host.tau);
     this.tauValue = Number(host.tau);
@@ -800,6 +818,9 @@ export class Loom {
     this.base = host.w0;
     this.baseRoot = weightRoot(host, this.base);
     this.initialBudget = host.budget;
+    // The limits belong to the host. The header is hashed, and the first event chains from it.
+    this.gate = { r_invariant: host.radius, budget: host.budget, cost: host.cost, tau: this.tau };
+    this.genesis = genesisId(host.descriptor(), this.gate);
     this.lineage = [{ root: this.baseRoot, w: this.base, budget: host.budget }];
     this.events = [];
     this.pins = [];
@@ -885,6 +906,7 @@ export class Loom {
    */
   commit(d, gesture = "hold", treadling = {}, note = "") {
     const fell = this.fell, host = this.host;
+    d = this.shed.project(d);       // a pick always passes through the shed of its pins
     const a = this.assess(d);
     if (!a.gate.accepted) return { refused: a.gate };
     if (!gestureSuffices(gesture, a.zone)) return { needs: a.zone };
@@ -913,7 +935,7 @@ export class Loom {
     const event = {
       seq: this.events.length + 1,
       kind: refuted ? "snap" : "pick",
-      prev: this.events.length ? this.events[this.events.length - 1].id : "genesis",
+      prev: this.events.length ? this.events[this.events.length - 1].id : this.genesis,
       parent_root: fell.root,
       root,
       move_sha256: toHex(sha256(moveBytes)),
@@ -946,7 +968,7 @@ export class Loom {
     const event = {
       seq: this.events.length + 1,
       kind: "unpick",
-      prev: this.events.length ? this.events[this.events.length - 1].id : "genesis",
+      prev: this.events.length ? this.events[this.events.length - 1].id : this.genesis,
       parent_root: fell.root,
       root,
       pins: [...this.pins],
@@ -981,7 +1003,7 @@ export class Loom {
     return {
       schema: "heedle-draft/1",
       host: this.host.descriptor(),
-      gate: { r_invariant: this.rInvariant, budget: this.initialBudget, cost: this.cost, tau: this.tau },
+      gate: this.gate,
       events: this.events,
     };
   }

@@ -49,6 +49,7 @@ export function textView() {
   return {
     name: "text",
     inputWord: "context",
+    provedText: "at every context",
     knownText: ", its commonest contexts",
     worded: true,
     futureLines: true,

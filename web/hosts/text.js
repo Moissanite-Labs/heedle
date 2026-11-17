@@ -27,8 +27,8 @@ export function makeTextHost(data) {
     kind: "text/1",
     name: data.name,
     w0,
-    rInvariant: data.r_invariant,
-    tau: String(data.tau),
+    radius: data.r_invariant,
+    tau: data.tau,
     budget: 24,
     cost: 1,
     probes: 64,
@@ -105,6 +105,8 @@ export function makeTextHost(data) {
     dispute(w0_, w1) {
       everyEnc ??= host.encode(everything);
       // The outputs of the last candidate are kept: when it became the fell, half the work is done.
+      // The cache is keyed on the array itself, so it relies on weights never being changed in
+      // place. A loom never does that: every candidate is a new array.
       const y0 = seen.w === w0_ ? seen.y : hd.forward(host, w0_, everyEnc);
       const y1 = hd.forward(host, w1, everyEnc);
       seen = { w: w1, y: y1 };
@@ -119,7 +121,11 @@ export function makeTextHost(data) {
       }
       return { worst: Math.sqrt(top / V), witness: [worst], rows: everything.length, exhaustive: true };
     },
-    witnessInputs: (witness) => Int32Array.from([witness[0]]),
+    provedInputs: () => everything,
+    witnessInputs(witness) {
+      if (witness.length !== 1 || !Number.isInteger(witness[0]) || witness[0] < 0 || witness[0] >= host.pinCount) throw new Error("witness outside the host's domain");
+      return Int32Array.from(witness);
+    },
     descriptor: () => ({ kind: "text/1", name: data.name, w0_root: hd.weightRoot(host, w0) }),
 
     /**

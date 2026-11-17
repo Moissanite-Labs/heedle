@@ -1,6 +1,6 @@
 /**
  * The cloth view: a host whose inputs are points of the unit square, drawn as a woven cloth.
- * Every input is on screen, so the picture is the model's whole behaviour.
+ * Every pixel is an input. The picture samples the square, 64 or 128 points a side.
  *
  * Colours are a fixed map of the three outputs, for the eye only. No check reads a colour.
  */
@@ -87,7 +87,7 @@ export function clothView() {
     ctx.fillStyle = weave;
     ctx.fillRect(0, 0, S, S);
     const ink = css("--ink"), paper = css("--paper");
-    // Focus: dim what the pending move leaves alone, so the eye goes where the weft will land.
+    // Focus: dim what the pending move leaves alone, so the eye goes where the change will land.
     if (s.focus && !s.resting) {
       const live = fields.live, ch = new Float64Array(LIVE * LIVE);
       let top = 0;
@@ -146,6 +146,7 @@ export function clothView() {
   return {
     name: "cloth",
     inputWord: "point",
+    provedText: "at 4,096 points of the cloth",
     knownText: " (the squares)",
     worded: false,
     futureLines: false,

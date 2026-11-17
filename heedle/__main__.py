@@ -24,12 +24,12 @@ def main(argv: list[str]) -> int:
         for p in problems:
             print("DIFFERS:", p)
         if not problems:
-            print("every root, verdict, witness and reading checks out")
+            print("every root, verdict and witness checks out")
         return 1 if problems else 0
     if len(argv) == 2 and argv[1] == "hosts":
         for host in (ClothHost(7), TextHost()):
             d = host.descriptor()
-            print(f"{d['kind']:8s} {host.shape.P:5d} weights  radius {host.r_invariant}  tau {host.tau}  root {d['w0_root']}")
+            print(f"{d['kind']:8s} {host.shape.P:5d} weights  radius {host.radius}  tau {host.tau}  root {d['w0_root']}")
         return 0
     print(__doc__)
     return 2

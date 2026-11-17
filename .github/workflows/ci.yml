@@ -26,5 +26,3 @@ jobs:
         run: |
           python3 -m heedle verify drafts/sample-cloth.json
           python3 -m heedle verify drafts/sample-text.json
-      - name: The hosts are the ones on record
-        run: python3 -m heedle hosts

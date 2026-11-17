@@ -1,6 +1,6 @@
 # Origins
 
-Heedle has two sources. Neither knew of the other.
+Heedle has two sources. As far as this repository knows, neither knew of the other.
 
 ## A loom in a conversation
 
@@ -35,7 +35,7 @@ Three things in its source shaped Heedle more than the four names did.
 
 **The model proposes and the person disposes.** The model suggests what matters. The reader decides what stays.
 
-**The work is in what to throw away.** Its README says the hard part was not generating ahead but deciding when what was generated is stale. Heedle's instruments count the futures they weave ahead and the ones they discard.
+**The work is in what to throw away.** Its README says the realtime feel needed speculative generation and cache invalidation driven by the reader's actions, and that these took much human judgement. Heedle's instruments count the futures they weave ahead and the ones they discard.
 
 What Spaceship does not have is what this lab has: the model's own internals, a bound, and a record. In its live mode a fast text model is prompted to pick phrases and axes, and a knob reaches the model as words in a prompt. By default the page runs simulated sources. Its README frames each idea as a question.
 
@@ -52,7 +52,7 @@ If you build on Spaceship's ideas, cite Spaceship. Its repository has a `CITATIO
 
 ## The note and the first record
 
-The connection was noticed by the owner of this repository on 17 November 2026. The design note in weft-loom, `notes/heddle-steering-instrument.md`, worked it out, with a prototype and a preregistered record, `experiments/heddle-knob-range-2026-11-17`. A second agent session fact-checked the note, and a member of the lab reviewed and approved the pull request, including a run of the tests on a second machine.
+The connection was noticed by the owner of this repository on 17 November 2026. The design note in weft-loom, `notes/heddle-steering-instrument.md`, worked it out, with a prototype and a preregistered record, `experiments/heddle-knob-range-2026-11-17`. A second agent session fact-checked the note. The pull request, [weft-loom#28](https://github.com/Moissanite-Labs/weft-loom/pull/28), carries an approving review by a member of the lab, which reports a run of the tests on a second machine. The files merged there were written before that review and still say they are unreviewed.
 
 This repository starts from that prototype. Three things are new here. The mathematics no longer knows what a host's inputs mean, so one implementation serves any host. There is a second host, a small text model, whose dispute reads its whole domain. And the draft has a written specification.
 

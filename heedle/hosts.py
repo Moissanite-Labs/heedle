@@ -7,9 +7,9 @@ the one input that breaks a claim, and which named changes (treadles) a person c
 
 Two hosts:
 
-    cloth/1   a point of the unit square to a colour. 467 weights. Every input can be
-              seen at once, so the picture is the model's whole behaviour. The dispute
-              search reads a lattice and climbs: a sampled reading.
+    cloth/1   a point of the unit square to a colour. 467 weights. Every pixel of the
+              instrument's picture is an input, and the picture samples the square. The
+              dispute search reads a lattice and climbs: a sampled reading.
     text/1    three characters to the next one. 4,700 weights, trained on this repository's
               own documents. The domain is every one of 21,952 contexts, so the dispute
               search reads all of them: an exhaustive reading.
@@ -18,6 +18,7 @@ from __future__ import annotations
 
 import json
 import math
+import re
 from pathlib import Path
 from typing import Dict, List, Optional, Sequence, Tuple
 
@@ -35,8 +36,10 @@ class Host:
     kind: str
     shape: Shape
     w0: np.ndarray
-    r_invariant: float
-    tau: str
+    radius: str                      # the gate's radius around the baseline, a decimal string
+    tau: str                         # the claim's limit, a decimal string
+    dispute_rows: int                # how many inputs the dispute reads
+    exhaustive: bool                 # whether that is every input there is
     budget: int = 24
     cost: int = 1
     probes: int = 64                 # fresh probes per pick
@@ -61,7 +64,18 @@ class Host:
     def tau_value(self) -> float:
         return float(self.tau)
 
+    @property
+    def r_invariant(self) -> float:
+        return float(self.radius)
+
+    def gate_header(self) -> dict:
+        """The session's limits as a draft states them. They belong to the host: a draft
+        whose header says anything else does not verify."""
+        return {"r_invariant": self.radius, "budget": int(self.budget), "cost": int(self.cost), "tau": self.tau}
+
     def normalise_pins(self, pins: Sequence[int]) -> List[int]:
+        if any(isinstance(p, bool) or not isinstance(p, (int, np.integer)) for p in pins):
+            raise ValueError("pins are integers")
         out = sorted(set(int(p) for p in pins))
         if out and (out[0] < 0 or out[-1] >= self.pin_count):
             raise ValueError("pin outside the host's domain")
@@ -107,7 +121,8 @@ class ClothHost(Host):
     FIT_GRID, PIN_LATTICE = 10, 64
     DISPUTE_GRID, DISPUTE_REFINE, DISPUTE_STEPS = 96, 4, 24
     treadle_names = ["warm", "light", "tilt", "contrast", "check"]
-    r_invariant, tau = 2.0, "0.5"
+    radius, tau = "2.0", "0.5"
+    dispute_rows, exhaustive = DISPUTE_GRID ** 2 + 4 * DISPUTE_REFINE * DISPUTE_STEPS, False
 
     def __init__(self, seed: int = 7):
         self.seed = int(seed)
@@ -190,8 +205,10 @@ class ClothHost(Host):
         return best_val, [float(best_pt[0]), float(best_pt[1])], rows, False
 
     def witness_inputs(self, witness):
+        if len(witness) != 2 or any(isinstance(v, bool) or not isinstance(v, (int, float)) for v in witness):
+            raise ValueError("a cloth witness is two numbers")
         x = np.array([witness], dtype=np.float64)
-        if not (np.all(x >= 0.0) and np.all(x <= 1.0)):
+        if not (np.all(np.isfinite(x)) and np.all(x >= 0.0) and np.all(x <= 1.0)):
             raise ValueError("witness outside the unit square")
         return x
 
@@ -239,7 +256,10 @@ class TextHost(Host):
         self.w0 = np.concatenate([np.asarray(data["weights"][n], dtype=np.float64).ravel() for n in core.TENSOR_NAMES])
         if self.w0.shape != (self.shape.P,):
             raise ValueError("weights do not fit the shape")
-        self.r_invariant, self.tau = float(data["r_invariant"]), str(data["tau"])
+        self.radius, self.tau = data["r_invariant"], data["tau"]
+        if not (isinstance(self.radius, str) and isinstance(self.tau, str)):
+            raise ValueError("the host file gives its limits as decimal strings")
+        self.dispute_rows, self.exhaustive = self.V ** self.K, True
         self.fit = [int(c) for c in data["contexts"]["fit"]]
         self.known = [int(c) for c in data["contexts"]["known"]]
         self.held = [int(c) for c in data["contexts"]["held"]]
@@ -307,10 +327,11 @@ class TextHost(Host):
         return float(ch[worst]), [worst], int(self.pin_count), True
 
     def witness_inputs(self, witness):
-        c = int(witness[0])
-        if not 0 <= c < self.pin_count:
+        if len(witness) != 1 or isinstance(witness[0], bool) or not isinstance(witness[0], int):
+            raise ValueError("a text witness is one context, an integer")
+        if not 0 <= witness[0] < self.pin_count:
             raise ValueError("witness outside the host's domain")
-        return np.array([c])
+        return np.array([witness[0]])
 
     def descriptor(self):
         return {"kind": self.kind, "name": self.name, "w0_root": self.root(self.w0)}
@@ -333,9 +354,20 @@ class TextHost(Host):
 
 
 def host_from_descriptor(desc: dict) -> Host:
-    """The host a draft names."""
-    if desc["kind"] == "cloth/1":
-        return ClothHost(int(desc["seed"]))
-    if desc["kind"] == "text/1":
-        return TextHost(REPO / "hosts" / f"{desc['name']}.json")
-    raise ValueError(f"unknown host kind {desc['kind']!r}")
+    """The host a draft names. The descriptor is read strictly: a seed is an integer, and
+    a name is a plain file name in hosts/."""
+    kind = desc.get("kind")
+    if kind == "cloth/1":
+        seed = desc.get("seed")
+        if isinstance(seed, bool) or not isinstance(seed, int) or not 0 <= seed < 2 ** 32:
+            raise ValueError("a cloth host is named by an integer seed")
+        return ClothHost(seed)
+    if kind == "text/1":
+        name = desc.get("name")
+        if not isinstance(name, str) or not re.fullmatch(r"[a-z0-9][a-z0-9-]*", name):
+            raise ValueError("a text host is named by a plain name")
+        path = REPO / "hosts" / f"{name}.json"
+        if not path.is_file():
+            raise ValueError(f"no host file for {name!r}")
+        return TextHost(path)
+    raise ValueError(f"unknown host kind {kind!r}")
