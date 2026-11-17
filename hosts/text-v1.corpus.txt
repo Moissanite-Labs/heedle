@@ -1,0 +1,454 @@
+charter heedle builds the layer where a person steers a model s change by hand inside bounds that
+are checked. why this exists the first design conversation behind ml weft described a loom in four
+layers warp weft heedle and tapestry. the third is where a person and a model meet. it raises and
+lowers specific threads of the warp to allow the weft to pass through. weft s runtime builds parts
+of the other three. until now nothing built the third. the design note the heddle the layer where a
+person steers https github.com moissanite labs weft loom blob main notes heddle steering
+instrument.md in weft loom proposed to build it with a first instrument and a first study. this
+repository is that proposal taken up. the name keeps the corpus s spelling. a real loom has heddles
+and inside this repository a heddle is one thing an input a person has pinned. what heedle is for
+one loop made by hand and checked by a program. propose. the instrument shows what a change would do
+before it is made.. steer. a person sets a named change and how far to take it in units of
+behaviour.. hold. the person marks what must not move.. check. the change commits only through a
+gate on the weights and a claim about behaviour that one input can refute.. keep or discard. a kept
+change joins a record that anyone can replay. a refuted one leaves the model where it was. heedle
+exists so that this loop can be run by a person at the speed of a hand on real model internals with
+every step open to checking. what it covers the mathematics of knobs marked in units of behaviour
+named changes with a share pins and tension. one implementation for any host that fits the contract.
+hosts small models whose inputs a program can enumerate or search. two exist a cloth where every
+input is a pixel and a text model where every input is three characters. instruments pages a person
+can use laid out as a weaving draft. the draft a hash chained record of a steering session and a
+verifier that replays it without the instrument. conformance the reference in python and the mirror
+in javascript are held to the same vectors. what it does not cover it does not run agents tools or
+training. it changes the weights of a small model along directions a person chose. it is not the
+weft runtime. it uses weft s gate unchanged and adds nothing to it. it does not hold experiment
+records. studies of heedle belong in weft loom https github.com moissanite labs weft loom
+preregistered there and reviewed there. this repository links them. it makes no claim about large
+models. every host here is a toy chosen so that its whole domain can be read. whether the loop
+survives a model whose inputs cannot be enumerated is an open question listed in the roadmap. it
+does not prove a person was present. a draft records the gesture the instrument saw. rules these
+follow the siliconcordat and weft s rules for evidence.. a stated rule is not a checked rule. a
+document that says the instrument enforces something links the test that checks it or says it is not
+checked.. a passing test is not a proof. the theory marks what follows from the definitions what a
+test checks on a toy host and what is a reading.. a forecast never refuses. tension is a first order
+prediction. only the gate refuses and only a refuted claim undoes a pick.. the person decides. the
+model may propose a change a name or a pin. nothing commits without the person s gesture and the
+closer a change comes to its limits the more deliberate the gesture must be.. learning a preference
+does not grant permission. an instrument may remember how a person likes to steer. each pick still
+needs the gesture.. every session can be replayed. if a verifier cannot rebuild a weight root from
+the draft alone that is a bug.. say what is toy. no document here describes a result on a toy host
+as a law. relations project what heedle takes from it what heedle gives back weft the gate vendored
+unchanged and pinned by hash a place where a person can see the gate the claim and the proved bound
+side by side weft loom the calibration theory the committed behaviour change design the note and the
+first record hosts and an instrument for further records ethos the rule that a preference is not a
+permission a form a steering preference could travel in a tie up and a treadling exo the idea of
+approvals and a visible trace approvals that scale with a forecast and a draft as the trace synmerit
+the idea of signed records of contribution per pick records that two people could divide exactly to
+first order along orthogonal shafts the right column lists what could be given. none of it is wired
+up. owner and review owner abu aska who created this repository. change this line when someone else
+takes it on. changes are reviewed as in reviewing.md reviewing.md. the author of a change does not
+merge it. what counts as done for now the promotion rule of the siliconcordat s ideas register asks
+for an owner a charter and a first study or runnable thing. this file is the charter. the
+instruments run. the first study is the record heddle knob range in weft loom made on the prototype
+this repository grew from. disclosure this charter and the first version of this repository were
+written by an ai agent session claude at the request of the repository owner.. contributing to
+heedle heedle is early. the most useful contributions make a claim testable or show that one is
+wrong. a failing test that exposes a gap is a welcome pull request. by taking part you agree to
+follow the code of conduct code of conduct.md. ground rules for evidence these matter more here than
+style does. they are weft s rules and the charter charter.md repeats them.. a stated rule is not a
+checked rule. if a document says the instrument enforces something link the test that checks it.
+otherwise say it is not checked.. a passing test is not a proof. docs theory.md docs theory.md marks
+each statement as proved tested known or a reading. keep the marks honest when you change a
+statement.. say what is toy. every host here is small enough that its whole domain can be read. do
+not describe a result on one as a law.. nothing live. tests and tools must not need keys or network
+access beyond installing packages.. keep the two languages together. a change to the mathematics
+goes into heedle and web heedle.js in the same pull request with the vectors rebuilt. where things
+live you have put it in a change to the mathematics heedle core.py web heedle.js and a vector in
+vectors a new host heedle hosts.py web hosts and a section in docs hosts.md docs hosts.md a change
+to the page web a change to the draft format docs protocol.md docs protocol.md first then heedle
+draft.py and web heedle.js an experiment a pilot or a result weft loom https github.com moissanite
+labs weft loom as a record. link it from docs theory.md docs theory.md an idea that is not yet code
+docs roadmap.md docs roadmap.md or a note in weft loom setup you need python. or newer with numpy
+and node or newer. run what ci runs look at the instruments then open http localhost web. rebuilding
+generated files hosts text v.json is a trained model. tools train text host.py says how it was made.
+retraining gives a different model with a different root so a retrained host gets a new name.
+commits and pull requests sign off every commit git commit s. keep a pull request to one change. say
+in the description which parts were written or run with ai assistance. the author of a change does
+not merge it. see reviewing.md reviewing.md.. reviewing changes to heedle a change is ready to merge
+when. it does what it says. the description matches the diff.. a test fails without it where the
+change is to behaviour. for a change to the mathematics both languages change and the vectors are
+rebuilt.. ci is green on the exact head.. claims match the code. a document changed by the pull
+request says nothing the tests do not check or it marks the statement as unchecked. statements about
+other repositories are checked like any factual claim.. the marks in the theory are honest. p for
+what follows from the definitions t for what a named test checks on a toy host k for a known result
+i for a reading.. every commit is signed off.. it holds one change. not reasons to block style a
+disagreement about an idea in the roadmap or an open question left open. raise these as comments.
+the author does not merge. use a merge commit when the order of the commits is part of the evidence.
+what does not belong here experiment records audits and design notes go to weft loom https
+github.com moissanite labs weft loom and are reviewed by its lanes. a pull request here that reports
+a measurement should link the record instead of carrying it.. hosts a host is a small model together
+with the meaning of its inputs. the mathematics in heedle core.py knows a host only as a three layer
+network with sparse feature vectors. everything else is the host s to say. the contract every host
+is the network with f features h hidden units in each layer and m outputs. it keeps this shape so
+that theorem of the calibration theory a proved bound on how far any output can move inside a radius
+applies to it as stated. a host provides what why encode inputs turns inputs into sparse feature
+vectors per input a few feature indices and their values w the baseline weights fit inputs the fit
+probes on which the model is linearised held inputs inputs kept apart from the fit probes for
+studies known inputs a small set of probes a proposer is assumed to know for the hidden move
+demonstration pin inputs pins the inputs that a list of integer pins names fresh inputs seed n
+probes derived from a hash using integer arithmetic only treadle pattern name inputs y the output
+pattern a named change asks for dispute w w a search for the one input that changes most and whether
+the search was exhaustive witness inputs witness the single input a recorded witness names or an
+error if it is outside the domain descriptor what a draft needs in order to rebuild the baseline r
+invariant tau budget the gate s radius the claim s limit and the number of picks allowed three
+rules. pins are integers. a pin must hash the same in every language.. fresh probes come from
+integers. a probe may be a fraction but only one made by dividing a hash word by a power of two.. a
+dispute says what it read. it returns how many inputs it evaluated and whether that was all of them.
+cloth a point of the unit square goes in. three numbers come out and are shown as a colour. shape
+features hidden units outputs weights features the two coordinates and six sines and cosines of them
+baseline drawn from a seed. no training fit probes a by grid pins cells of a by lattice treadles
+warm light tilt contrast check dispute reads a by lattice then climbs from the four best cells. a
+sampled reading every input is on the screen at once so the picture is the model s whole behaviour.
+that is why the cloth is the first host each idea in the theory can be seen. the ball and the
+ellipsoid the room between probes a pin and its neighbourhood are all visible as changes to one
+picture. the treadle check asks for a fine checkerboard. with sixteen shafts its share is near.. it
+is kept as a foil a name the shafts in use cannot carry shown as such. the cloth is not trained and
+its dispute is a search. finding nothing means nothing was found among the inputs read. text three
+characters go in. a score for each possible next character comes out. alphabet the letters the space
+and the full stop symbols input a context of three characters. there are shape features hidden units
+outputs weights features three one hot blocks one per character of the context outputs centred
+scores. a softmax of them is the model s guess at the next character baseline trained on this
+repository s own documents fit probes the contexts the training text uses most pins contexts
+treadles vowels spaces stops echo sharp dispute reads every context. exhaustive this is the smallest
+thing that can be called a language model and it is here for one reason its domain is finite and
+small enough to read whole. on the cloth an admitted pick has passed a search. on this host an
+admitted pick has been checked on every input the model has. how it was made tools train text
+host.py takes the markdown documents of this repository reduces them to the symbols counts how often
+each context is followed by each character and fits the network to those counts. the text it used is
+kept as hosts text v.corpus.txt with its hash in the host file so the training text is fixed even
+when the documents change. the model is named text v. retraining gives a different model with a
+different weight root so a retrained model gets a new name and drafts made on the old one still
+verify against the old file. what the treadles ask for treadle the pattern on every fit probe in
+plain words vowels the five vowels up more vowels spaces the space up shorter words stops the full
+stop up shorter sentences echo the character just written up doubled letters sharp the model s
+current scores scaled more of whatever it already prefers the first three ask for the same thing in
+every context so a change to the output biases carries most of them. echo and sharp depend on the
+context. their shares say how much of that the shafts can carry. what the instrument shows each pick
+weaves one line of text sampled from the model at the new fell. the line a pending move would weave
+is drawn below the fell and changes as the knobs turn. two sets of weights are always compared on
+the same random draws so a difference in the text is a difference in the model. sampling is for the
+eye. no check reads a sampled character. what it is not it is a model of three characters of
+context. it does not know words. text it weaves looks like the shape of english and means nothing.
+its training text is small and it has learned that text s habits. nothing measured on the cloth has
+been measured on it. adding a host. give it the three layer shape. if its outputs feed a softmax
+centre them.. write encode so that features are sparse and indices within one input are distinct..
+decide the domain and write the dispute. if the domain can be enumerated enumerate it and say so..
+choose fit probes that cover what the model is used for and keep held out inputs apart from them..
+write treadles as output patterns. give each a plain description of what it asks for.. implement it
+in heedle hosts.py and in web hosts and add its vectors with tools make vectors.py.. add a section
+here that says what the host is how its baseline was made what its dispute reads and what it is not.
+a host whose model is not the three layer network cannot use the proved bound. it would need its own
+or would have to say that it has none.. origins heedle has two sources. neither knew of the other. a
+loom in a conversation ml weft began as a long design conversation kept word for word in weft corpus
+https github.com moissanite labs weft corpus. early in it weft browser sources thread splicers
+genesis b.md lines to a loom is laid out in four layers. the third the heedle is the mechanism that
+raises and lowers specific threads of the warp to allow the weft to pass through. this is where
+human intuition and machine calculation achieve perfect synthesis. the same conversation asks for an
+interface through which a person feels a system s strain and adjusts it by hand lines to and for a
+governor that uses the tension of the loom as a real time dial for autonomy lines to. its dial has
+three zones. below a tension of. the machine weaves alone. from. the person is drawn in. from. the
+weave waits for the person. weft s own reading of the corpus classes all of this as vision language
+words for what a design aims at not a description of code. the glossary in weft keeps such words and
+writes beside each one what the code does today. it has no entry for this layer because nothing
+built it. heedle keeps three things from the conversation and treats them as proposals to test the
+layer itself and its name the three zones and their thresholds which nothing derives the idea that a
+boundary should cost more to approach instead of being a wall. the conversation s price was compute.
+heedle s is the person s deliberateness a longer hold. a cockpit for a story spaceship ide https
+github.com chuanqisun spaceship is a design concept by chuanqi sun of the mit media lab released
+under the mit licence. heedle read it at commit ddd d aa f d dd b b e f a. its readme states one
+conjecture that language models and decision models will soon answer fast enough to interact with
+sixty times a second and asks what a person could then do. it shows a story being written while the
+reader steers it with four ideas idea what the reader does focus monitor sees which earlier phrases
+the next words depend on attention lock keeps moves removes or adds boxes on phrases and later text
+is built on them future vector steering turns knobs for the text to come each an axis with a
+position and a strength realtime re generation drags a knob back through the text and what lies
+ahead is written again three things in its source shaped heedle more than the four names did. it
+checks its own steering. a second model is asked of each new sentence whether the sentence delivers
+what the control asked for. a control is treated as a claim and a sentence as evidence. that is the
+stance of this lab s records reached from the side of the interface. the model proposes and the
+person disposes. the model suggests what matters. the reader decides what stays. the work is in what
+to throw away. its readme says the hard part was not generating ahead but deciding when what was
+generated is stale. heedle s instruments count the futures they weave ahead and the ones they
+discard. what spaceship does not have is what this lab has the model s own internals a bound and a
+record. in its live mode a fast text model is prompted to pick phrases and axes and a knob reaches
+the model as words in a prompt. by default the page runs simulated sources. its readme frames each
+idea as a question. heedle uses no code from spaceship. it takes the four ideas and gives each a
+counterpart on real internals spaceship s idea heedle s counterpart how they differ focus monitor
+the instrument dims whatever the pending move leaves unchanged heedle shows what a change touches.
+spaceship shows what the next words depend on attention lock a heddle a pinned input a locked phrase
+leads the next text. a pin forbids change future vector steering shafts and treadles in units of
+behaviour each with a share heedle s directions are eigenvectors of a matrix computed from the model
+realtime re generation futures woven ahead of the knob and unpicking heedle keeps what was unpicked
+in the record if you build on spaceship s ideas cite spaceship. its repository has a citation.cff.
+the note and the first record the connection was noticed by the owner of this repository on
+november. the design note in weft loom notes heddle steering instrument.md worked it out with a
+prototype and a preregistered record experiments heddle knob range. a second agent session fact
+checked the note and a member of the lab reviewed and approved the pull request including a run of
+the tests on a second machine. this repository starts from that prototype. three things are new
+here. the mathematics no longer knows what a host s inputs mean so one implementation serves any
+host. there is a second host a small text model whose dispute reads its whole domain. and the draft
+has a written specification. weaving the vocabulary is a naming choice. it was made because the
+first order picture of a pick has the shape of a weaver s draft a product of a threading a tie up
+and a treadling. vocabulary.md vocabulary.md lists what each word names in the code. the words prove
+nothing. one word needs a sentence. the repository is named heedle in the corpus s spelling. the
+loom part is a heddle. here a heddle is a pinned input and heedle is the project.. the draft a
+steering session as a record a draft is the record of one session at a loom. anyone holding it can
+rebuild every set of weights the session passed through and check every verdict without the
+instrument that made it. this document is the specification of heedle draft. the reference verifier
+is heedle draft.py. design rules. commit to exact things. recompute the rest. an event s identifier
+covers strings and integers only. every number with a fraction is a reading and a verifier
+recomputes it.. moves travel as bytes. a move is carried as float values little endian. the fell
+after a pick is the fell before it plus the move and float addition is the same everywhere so every
+verifier reaches the same weights.. one input is enough to refute. a snap carries its witness.
+checking it takes two forward passes.. the record is append only. unpicking adds an event. it
+removes nothing. hashing all hashes are sha written as lower case hexadecimal. canonical json is
+json with keys sorted no spaces and only strings integers and lists of them the bytes of python s
+json.dumps obj sort keys true separators. domain strings keep hashes of different things apart.
+weight roots use weft cbc v. everything else uses heedle v. weight root the root of a set of weights
+is the weight root of committed behaviour change v over the six tensors w b w b w b bytes are the
+tensor s float values in row major order little endian. a root made here is a valid w root or w root
+of a cbc record. claim tau is a decimal string. pins are sorted integers. the claim says no input in
+the host s domain changes by more than tau between w root and w root. the change of an input is the
+root mean square over its outputs of the difference. probes the host turns word i j into its i th
+probe. the seed depends on the candidate s root so the probes cannot be known before the candidate
+is fixed. event identifier the document host names the baseline. a cloth host is rebuilt from its
+seed. a text host is named and its weights are the file hosts name.json. in both cases w root must
+equal the root of the rebuilt baseline. gate holds the session s limits the gate s radius around the
+baseline the number of picks the budget allows the cost of one and the claim s limit. events every
+event has seq from kind prev the previous event s id or genesis parent root the fell before it root
+pins gesture tau and id. pick the gate accepted the move and the dispute found no input that breaks
+the claim. the fell becomes root. field meaning move b the move float little endian base move sha
+the hash of those bytes gate accepted distance from the baseline remaining budget reason claim id
+probes how many realized change on the fresh probes worst and witness the dispute s largest change
+and where rows inputs read exhaustive refuted reading what the instrument showed before the beat
+length predicted predicted worst tension zone pin leak treadling delivered note snap the gate
+accepted the move and one input breaks the claim. the fell does not move after a snap the fell is
+still parent root. root is the root the candidate would have had. the budget is spent. the fields
+are those of a pick with claim.refuted true and claim.witness the input that refutes. unpick the
+person returned to an earlier fell. root is that fell which must have been the fell at some earlier
+point. the weights return. the budget already spent stays spent. gestures and zones gesture is one
+of release hold knot in rising order of deliberateness. the tension of a pick is the larger of
+distance r invariant and the first order change at the worst fit probe over tau. its zone is auto
+below. shared from. knot from.. a pick is well formed only if its gesture is at least as deliberate
+as its zone. what a verifier checks starting from the rebuilt baseline for each event in order. prev
+equals the previous id and id equals the event identifier of the event s own fields. exact.. parent
+root equals the current fell s root. exact.. for a pick or a snap move sha equals the hash of the
+move s bytes. exact.. the gate run on baseline and candidate with the remaining budget gives the
+recorded accepted and reason. exact. the recorded distance matches. within a tolerance.. the
+candidate s weight root equals root. exact.. the gesture is deliberate enough for the tension the
+verifier computes. skipped within e of a threshold.. claim.id equals the claim identifier. exact.
+claim.realized matches the change on the probes the verifier derives. within a tolerance.. for a
+snap the change at claim.witness exceeds tau and the witness is in the host s domain. one input two
+forward passes.. for a pick the verifier s own dispute finds nothing above tau and its largest
+change matches claim.worst. within a tolerance.. for an unpick root was the fell at some earlier
+point. a draft passes when none of these fails. what a draft cannot show that a person made the
+gesture. it records what the instrument saw. that a pick was a good idea. it records that the pick
+stayed within its claim. more than the dispute read. on the cloth admission is a sampled reading. on
+the text host the dispute reads the whole domain in float. why. reading.treadling and reading.note
+say what was pressed. they are annotations. the verifier does not check them and a move need not
+have come from a treadle at all. versions a change to anything a hash covers to the event kinds or
+to what a verifier must check needs a new schema name. adding a reading does not. use the command
+prints what it replayed and each difference it found and exits with status only when there is none..
+roadmap what could grow from here. each entry is an idea. each says what exists what it would take
+to find out whether the idea is a good one and what would count against it. nothing here is adopted.
+the entries began as the twelve seeds of the design note in weft loom. where this repository has
+taken a step the entry says so. hosts. a text host a person would recognise exists. text three
+characters in the next one out weights. its dispute reads all contexts so an admitted pick has been
+checked on the whole domain. next. a model with a longer memory. past a handful of characters the
+domain cannot be enumerated and the dispute becomes a search again. the question is what that search
+should be for text. candidates every context that occurs in a held corpus contexts found by
+following the model s own samples a proposer and a disputer drawn from different sources. against
+it. if no search finds the changes a person would call harmful on a model whose domain cannot be
+read whole the loop does not scale by this route.. directions read from a real language model
+exists. nothing. next. on one small open model find directions in weights or activations for a few
+named changes compute each one s share on fit text and measure its gain on held out text. spaceship
+s check a second model asked whether a sentence delivers a control can be run beside it on the same
+sentences. against it. if no named direction keeps its label on held out text shares on a real model
+are not worth showing.. a fell for plasm exists. nothing. weft s plasm cycle proposes two candidates
+per generation and keeps at most one. next. export one recorded plasm run as a draft with the
+candidate that was not chosen as a discarded future and replay it. this needs a host for plasm s
+weight matrix and no new mathematics. the instrument. names the model proposes exists. each host has
+five treadles written by hand. next. let a model propose patterns for the shafts it sees. each
+proposal arrives with its share. the person accepts a name or does not. test are proposed names
+carried better than the hand written ones and do people choose them.. two weavers on one cloth
+exists. nothing. next. shafts are orthogonal. if two people hold disjoint shafts each pick s first
+order change divides between them exactly. a draft could carry both gestures and synmerit s signed
+records could attach to it. test with two scripted weavers how fast does the division go wrong as
+travel grows.. sound and touch exists. nothing. the corpus imagined feeling a system s strain.
+spaceship s sound grows softer as its knob moves faster. next. tension as pitch. a snap as a snap.
+test with eyes on the drawdown only does a person stop before a pick would be refuted.. the room
+between probes shown exists. core.hidden move and a button that shows one move built to hide from
+probes it knows. next. a number beside the probes how much change could hide from these. the first
+record found that it falls as the probes multiply.. autopilot inside the first zone exists. zones
+and a gesture that grows with tension. next. below tension. the corpus lets the machine weave alone.
+let a proposer make small picks there with the person at rest every pick in the draft. test how
+often is such a pick unpicked later. the record. signed drafts exists. a hash chain. no signatures.
+next. a signature per event by the person s key and the instrument s. then a draft can say who
+stands behind each gesture though still not that a hand made it.. snaps as closures exists. snaps
+each with one witness. next. weft loom s closure notes close a path only on a certificate and admit
+a counterexample as one. a snap is a counterexample. a register of snaps is a map of where a model
+cannot be taken under a given claim.. a steering preference that travels exists. nothing. next. a
+person s tie up and habitual travels written in a form a different host could re thread. this is
+where ethos would attach. the rule holds as written learning a preference does not grant permission.
+studies studies belong in weft loom preregistered. these are the ones this repository makes
+possible.. does the forecast hold on text. the first record found the forecast close on the cloth.
+on text the check is exhaustive so the comparison is exact every pick forecast safe against every
+context there is.. where sixty frames a second ends frame time against host size with the linear
+algebra moved to a worker or to webgpu. spaceship s conjecture is about the future. for small models
+it can be measured now.. people does a person reach a target faster or with fewer refuted picks with
+treadles than with shafts and with either than with raw weights. everything measured so far is about
+the instrument. this is the question the layer exists for. it needs people their consent and a task.
+open questions. shafts change after every pick. how should a knob keep its meaning along a session.
+the instrument re threads at each fell and re ties the same named patterns.. a pin holds its
+neighbourhood back by an amount that varied more than a pilot suggested. can the instrument show the
+extent of a pin before the pick.. is. the right threshold for a longer hold. nothing derives it and
+the first record does not single it out.. should a refuted pick spend the budget. here it does so
+that probing the limit is not free.. on the cloth the dispute starts from a fixed lattice that a
+proposer could know. should it start from the fresh probes instead as the committed behaviour change
+design s search does.. what is the right claim. no input changes by more than tau is the one the
+records use. a person steering wants change in one place and not in others.. which of this survives
+a model whose weights are too many to hold a jacobian for.. theory a knob is a claim with a handle
+this document says what the instrument computes and why. it builds on two documents in weft loom the
+calibration theory experiments gate metric calibration theory.md and the committed behaviour change
+design experiments committed behaviour change design.md. those judge a move after it is made. this
+one uses the same objects to make a move. marks p follows from the definitions by linear algebra to
+first order where the sentence says so. t checked by a test in this repository on its toy hosts. the
+test is named. k a known result used as stated. i a reading or a proposal. a passing test is not a
+proof so t is never used where p is meant.. setting a host computes f x w from an input x and a
+weight vector w of length p. every host here is the three layer network with a fixed map from its
+inputs to feature vectors x. a host may centre its outputs. the fell is the last committed weight
+vector. a move is a vector d and the candidate is fell d. on a set x of n inputs with m outputs each
+j is the matrix of derivatives of the outputs with respect to the weights and g j j n m. k for a
+small move the output change is j d so the root mean square change on x is sqrt d gd to first order.
+the fit probes are the fixed set of inputs on which j is taken. the change of one input is the root
+mean square over its outputs of the difference between candidate and fell.. shafts knobs in units of
+behaviour take the eigenvectors v i of g with eigenvalues lam i largest first. they are the shafts.
+p to first order a move of t sqrt lam i along v i changes the outputs on the fit probes by t in root
+mean square whichever shaft it is. proof d gd t v i g v i lam i t. so a knob on a shaft can be
+marked in travel a unit of behaviour and one unit means the same on every knob. a stiff shaft has a
+short throw in weight space and a slack one a long throw. p each shaft has a pattern. with j v i s i
+u i and u i of unit length the output change of one unit of travel is u i sqrt n m a pattern of unit
+root mean square. t tests test core.py test travel is measured in behaviour checks the first
+statement on both hosts.. treadles the tie up and the share a treadle is a named output pattern c on
+the fit probes of unit root mean square. its coefficient on shaft i is alpha i u i c sqrt n m. with
+travel t tied to the first k shafts its move is p to first order the output change is t times the
+projection of c onto the span of the k shaft patterns. its gain along c j d c c c is t rho with call
+rho the share of the treadle. it lies between and. the part of the request that is not delivered has
+root mean square t sqrt rho. p the share never falls when shafts are added because each added term
+is a square. i so a label comes with a number that says how much of it is true to first order at the
+current weights for the shafts in use. a low share does not mean the model cannot make the change.
+it means these shafts cannot carry it. the matrix of the alpha shafts by treadles is the tie up. t
+test tie up delivers its share and test more shafts never carry less.. a treadling is a weaving
+draft write theta for the shaft patterns one column per shaft t for the tie up and k for the vector
+of travels a person sets. p then to first order proof d v l t k with l the diagonal matrix of the
+lam i and j v theta l. k a weaver s draft has the same shape. the threading says which warp thread
+hangs on which shaft the tie up says which shafts each treadle lifts the treadling says which
+treadle is pressed for each pick and the drawdown is their product taken with and and or. i the
+likeness is exact in form for one pick to first order. a loom s threading is fixed. this one changes
+after every pick because g does. the likeness is still useful it names three things with three
+different owners. the threading is computed from the model. the tie up belongs to whoever chose the
+names. the treadling is the person s. t test a treadling is a weaving draft checks the identity to e
+on both hosts.. heddles and the shed a heddle is a pinned input its outputs are to be held still.
+let j pin be the jacobian on the pinned inputs. the shed is the null space of j pin. p a move in the
+shed leaves the pinned outputs unchanged to first order. the instrument threads the loom around the
+pins its shafts are the eigenvectors of g restricted to the shed. p each such shaft lies in the
+shed. p restricting to the shed cannot raise an eigenvalue so pins never add reach. t what reaches a
+pin is second order halving a move quarters the leak test what reaches the pins is second order. i
+section of the calibration theory notes that the same subspace is read two ways in weft s records as
+the safe channel and as the hiding place. the difference between the two readings is who chose the
+direction and what they knew. a heddle settles who chose the person by hand where it can be seen.
+the same construction used by a proposer who knows which probes will be read hides a change.
+core.hidden move builds one and the instrument has a button that shows it.. three edges a pick has
+three edges.. proved. k theorem of the calibration theory. its proof needs only a bound on the units
+slope here for tanh. inside radius r no input s output moves by more than r c x r q x r k x with c q
+and k computed at the fell. centring the outputs is a projection so the bound holds for centred
+outputs. t no move tried in test the proved bound is never exceeded exceeds it.. predicted. the
+first order change at the worst fit probe against the claim s limit tau.. permitted. weft s gate w w
+r against the session s baseline and budget cost. i along a host s shafts the three usually nest the
+proved edge innermost. in general they do not. the set of moves with a small predicted change is
+unbounded along directions the fit probes cannot see and so runs outside the gate s ball. this is
+the calibration record s point a ball in weight space is the wrong shape for a bound on behaviour..
+tension and the gesture the tension of a move is the larger of two numbers its distance from the
+baseline over the gate s radius and its predicted change at the worst fit probe over tau. tension
+sets how deliberate the person s gesture must be. the thresholds are the corpus s tension gesture
+below. a tap. to. press and hold. and up a longer hold i tension is a forecast. it never refuses a
+move. the gate refuses and a refuted claim undoes a pick. a forecast that refused would turn a first
+order estimate into a rule. i nothing derives. and.. in the first record no pick below tension. was
+refuted and the lowest refuted pick was at. so that record does not single out... a pick is a
+committed behaviour change when a person beats a move in. the gate decides on the weights. a refusal
+records nothing and spends nothing.. the candidate gets a weight root. t it is the root of committed
+behaviour change v byte for byte test weight root is the cbc weight root which reimplements that
+scheme independently.. the pick makes a claim no input in the host s domain changes by more than
+tau.. probes are derived from the hash of the root and the claim so after the candidate is fixed.
+they measure what the pick did. they do not decide it.. the host s dispute looks for one input that
+breaks the claim. if it finds one the pick snaps the fell does not move the input is kept as the
+reason and the budget is spent. if it finds none the pick is admitted. a snap is verified from its
+one witness the input two forward passes a comparison.. when the dispute can be complete how much an
+admission says depends on the host s domain. i on the cloth the domain is a square. the dispute
+reads a lattice and climbs from the best cells. finding nothing is a sampled reading a larger search
+could find more. p on a host whose domain is finite and is enumerated finding nothing is complete
+the largest change among all inputs is the largest there is. the text host s domain is every context
+of three characters in all and its dispute reads every one. an admitted pick there has been checked
+on the whole domain. i two cautions. the check is in float so complete means complete up to
+rounding. and a complete check of a claim says nothing about whether the claim was the right one to
+make a model can stay within tau everywhere and still change in a way a person cares about. t test
+text dispute reads the whole domain.. the draft every pick snap and unpick is an event in a hash
+chain. an event commits to exact things only its place in the chain the roots before and after the
+hash of the move s bytes the pins the gesture and tau. the move travels as float bytes. p the fell
+after a pick is the fell before it plus the recorded move added in float. addition of two float
+numbers is the same on every machine so a verifier that starts from the same baseline reaches the
+same bytes and the same root. readings in an event are not trusted. a verifier recomputes them. i a
+draft records the gesture the instrument saw. nothing proves a person made it. t tests test draft.py
+replays drafts made by the javascript loom and catches a changed move a reordered event a snap whose
+witness does not refute and a gesture too light for its tension.. what has been measured one record
+exists experiments heddle knob range in weft loom made on the cloth host of the prototype this
+repository grew from. seventeen predictions were fixed before the run on random and fitted hosts.
+sixteen were confirmed in each arm. two were not and the record says which. in short on those hosts
+a treadle s label held within a factor. up to a travel of. on of hosts. no pick with tension below.
+was refuted and all but one with tension. or more were. sixteen pins closed a tenth of the
+directions and left between. and. of the named reach. a move hidden from sixteen known probes
+changed the rest of the cloth between. and times more than those probes showed. nothing has been
+measured on the text host. nothing has been measured with a person. not covered no bound is proved
+for any host that is not the three layer network above. the first order picture is a picture. how
+far it holds is a measurement made so far on one host shape. the hidden move is a first order
+construction. a stronger adversary would find more room. the theory says nothing about whether a
+person steers better with any of this.. vocabulary each word names one thing in the code. where a
+word is also used more loosely in prose the last column says so. word what it is in the code also
+host a small model together with the meaning of its inputs hosts.host web hosts.js baseline the
+weights a session starts from and the centre of the gate s ball host.w the warp in prose fell the
+last committed weights loom.fell move a change of the weights one number per weight d fit probes the
+fixed inputs on which the model is linearised host.fit inputs shaft a unit eigenvector of g j j n m
+on the fit probes with its eigenvalue threading.v threading.lam shaft pattern the unit output
+pattern a shaft makes threading.u the shaft s picture on the cloth travel how far a knob is turned
+in units of first order output change t throw the length of the weight move for one unit of travel
+sqrt lam threading the shafts and their patterns at one fell core.threading thread treadle a named
+output pattern host.treadle pattern tie up the coefficients of the treadles on the shafts
+tieup.alpha share the part of a treadle s pattern the shafts in use can carry between and
+tieup.share treadling the travels a person sets for one pick reading.treadling heddle a pinned input
+its outputs are held still to first order pins shed the moves that leave the pinned inputs alone to
+first order core.shed gate weft s check on the weights inside a radius of the baseline and within
+budget verify weight update safety the left selvedge on the page claim no input changes by more than
+tau made by a pick claim id the right selvedge shows its forecast tension a forecast of how close a
+move comes to the gate or the claim assess.tension zone which gesture a tension asks for auto shared
+or knot zone of pick a committed move event kind pick snap a move the gate accepted and one input
+refuted event kind snap unpick a return to an earlier fell event kind unpick dispute the host s
+search for one input that breaks a claim host.dispute witness the input a dispute found
+claim.witness fresh probes inputs derived from a hash after a candidate is fixed host.fresh inputs
+draft the hash chained record of a session heedle draft loom one session a host a fell pins and a
+draft loom in web heedle.js two words used twice heedle and heddle. heedle is the project in the
+spelling of the corpus. a heddle is a pinned input. selvedge. in prose a selvedge is any edge a pick
+should stay inside. the theory names three the proved radius the predicted change and the gate. the
+page draws two bars beside its drawdown and marks the proved radius on one of them. words from
+weaving that are not used warp is used only in prose for the baseline. weft is not used for anything
+here it is the name of the program this repository belongs to. shuttle reed beam and tapestry name
+nothing in the code.

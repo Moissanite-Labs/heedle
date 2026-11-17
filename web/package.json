@@ -1,0 +1,9 @@
+{
+  "name": "heedle-web",
+  "private": true,
+  "type": "module",
+  "description": "Heedle's browser core and instruments. No dependencies.",
+  "scripts": {
+    "test": "node --test test_heedle.mjs"
+  }
+}
