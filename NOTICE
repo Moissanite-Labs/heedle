@@ -1,0 +1,41 @@
+Heedle
+Copyright 2026 Moissanite Labs and the Heedle contributors.
+
+This repository is dual-licensed by content type:
+
+  * Source code is licensed under the Apache License, Version 2.0 (LICENSE).
+    This covers heedle/, web/, tools/, tests/ and .github/.
+
+  * Documentation and prose are licensed under the Creative Commons
+    Attribution 4.0 International License (LICENSE-docs). This covers docs/
+    and the Markdown files elsewhere in the repository. Code listings that
+    appear inside those documents may also be used under the Apache License,
+    Version 2.0, at your option.
+
+  * The files in vectors/ (other than weft-invariants.json) and drafts/ are
+    written by the code and are under the Apache License, Version 2.0.
+
+  * The trained model in hosts/text-v1.json and the text it was trained on,
+    hosts/text-v1.corpus.txt, are under CC BY 4.0. The text is taken from
+    this repository's own documents.
+
+Third-party and upstream material:
+
+  * web/vendor/invariant-gate.js and vectors/weft-invariants.json are copied
+    unchanged from Moissanite-Labs/weft (Apache-2.0). VENDORED.json records
+    the commit and the hashes.
+
+  * The mathematics and the first instrument come from the prototype in
+    Moissanite-Labs/weft-loom, notes/prototypes/heddle/ (Apache-2.0), and
+    rest on that repository's calibration theory and committed-behaviour-
+    change design (CC BY 4.0).
+
+  * Four interaction ideas (a focus monitor, an attention lock, future vector
+    steering and realtime re-generation) are from Spaceship IDE by Chuanqi Sun,
+    https://github.com/chuanqisun/spaceship (MIT licence). No code from it is
+    used here. If you build on those ideas, cite Spaceship.
+
+  * CODE_OF_CONDUCT.md is the Contributor Covenant.
+
+"Heedle" and "Moissanite Labs" are names of Moissanite Labs. The licences do
+not grant trademark rights.

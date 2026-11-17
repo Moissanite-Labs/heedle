@@ -1,0 +1,17 @@
+cff-version: 1.2.0
+message: "If you use this software, please cite it using these metadata. If you build on the interaction ideas, also cite Spaceship IDE (https://github.com/chuanqisun/spaceship)."
+type: software
+title: "Heedle"
+abstract: >-
+  The layer where a person steers a small model's change by hand, inside bounds that are checked: knobs marked in
+  units of behaviour, named changes with a share, pinned inputs, a commit through a gate on the weights and a claim
+  one input can refute, and a hash-chained record that replays without the instrument.
+authors:
+  - name: "Moissanite Labs and the Heedle contributors"
+repository-code: "https://github.com/Moissanite-Labs/heedle"
+license: Apache-2.0
+keywords:
+  - human-computer interaction
+  - steerable models
+  - verification
+  - AI safety
