@@ -104,6 +104,7 @@ One study exists, in weft-loom: [`experiments/heddle-knob-range-2026-11-17`](htt
 - [Hosts](docs/hosts.md): the contract, the two hosts, and how to add one
 - [Vocabulary](docs/vocabulary.md): each word and what it names
 - [Origins](docs/origins.md): the corpus's loom, and Spaceship IDE
+- [Session queue](docs/session-queue.md): a proposed neighboring surface for steering a running agent session
 - [Roadmap](docs/roadmap.md): what could grow from here, and the open questions
 
 ## Related repositories
