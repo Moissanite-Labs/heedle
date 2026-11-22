@@ -131,7 +131,7 @@ A **snap** is a move the gate accepted and one input refuted. The fell does not 
 | **K1** | For a pick: the verifier's own dispute finds no change above `tau`, and `claim.refuted` is false |
 | **K2** | For a pick: the largest change the verifier's dispute finds is `claim.worst` |
 
-**Tension** is the larger of `distance / r_invariant` and the first-order change at the worst fit probe over `tau`, both taken at the fell the event starts from. Its **zone** is `auto` below 0.3, `shared` from 0.3, `knot` from 0.7. A gesture is deliberate enough when it is at least as far along `release`, `hold`, `knot` as the zone is along `auto`, `shared`, `knot`. T1 is not applied within `1e-6` of a threshold.
+**Tension** is the larger of `distance / r_invariant` and the first-order change at the worst fit probe over `tau`, both taken at the fell the event starts from. Its **zone** is `auto` below 0.3, `shared` from 0.3, `knot` from 0.7. A gesture is deliberate enough when it is at least as far along `release`, `hold`, `knot` as the zone is along `auto`, `shared`, `knot`. Within `1e-6` of a threshold (`0.3` or `0.7`), T1 accepts the immediately adjacent lighter gesture (`release` near `0.3`, `hold` near `0.7`), not a gesture two zones lighter.
 
 **Tolerances.** G2's distance, C2's change and C4 are compared within `1e-6 * max(1, value)`. K2 uses the same on a host whose dispute is exhaustive, and `1e-3 * max(1, value)` on a host whose dispute is a search, because the last steps of a search can differ between machines.
 

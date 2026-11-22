@@ -50,6 +50,9 @@ each("the weights and every hash match the reference bit for bit", (b) => {
   assert.equal(hd.genesisId(host.descriptor(), gate), vec.exact.genesis_id);
   assert.equal(new hd.Loom({ host, shafts: 2 }).genesis, vec.exact.genesis_id);
   assert.throws(() => hd.canonicalJson({ tau: 0.5 }), /only integers and strings/);
+  assert.throws(() => hd.canonicalJson({ cost: true }), /only integers and strings/);
+  assert.throws(() => hd.canonicalJson({ x: null }), /only integers and strings/);
+  assert.throws(() => hd.canonicalJson(false), /only integers and strings/);
 });
 
 test("the built-in SHA-256 agrees with Node's", () => {
@@ -85,6 +88,10 @@ each("block iteration finds the shafts an exact SVD finds", (b) => {
     close(hd.norm(th.V[i]), 1.0, { atol: 1e-10 });
     close(hd.predictedChange(th, hd.shaftMove(th, i, 0.37)), 0.37, { atol: 1e-9 }, "travel is behaviour");
   }
+  assert.throws(() => hd.shaftMove(th, -1, 0.1), RangeError);
+  assert.throws(() => hd.shaftMove(th, th.lam.length, 0.1), RangeError);
+  assert.throws(() => hd.shaftMove(th, 0.5, 0.1), RangeError);
+  assert.throws(() => hd.shaftMove({ lam: [1.0, 0.0], V: [new Float64Array([1]), new Float64Array([1])] }, 1, 0.1), RangeError);
   const tie = hd.tieUp(th, Object.fromEntries(host.treadleNames.map((name) => [name, host.treadlePattern(name, b.fitInputs, hd.forward(host, w, fit))])));
   for (const name of host.treadleNames) {
     close(tie.share[name], n.share_16.values[name], n.share_16, name);

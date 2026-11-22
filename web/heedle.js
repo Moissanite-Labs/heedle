@@ -481,7 +481,14 @@ export function predictedChange(threading, d) {
 
 /** The move along shaft i whose first-order behaviour change is |travel|. */
 export function shaftMove(threading, i, travel) {
-  const s = travel / Math.sqrt(threading.lam[i]);
+  if (!Number.isInteger(i) || i < 0 || i >= threading.lam.length) {
+    throw new RangeError(`shaft index ${i} out of range`);
+  }
+  const lam = threading.lam[i];
+  if (!(Number.isFinite(lam) && lam > 0.0)) {
+    throw new RangeError(`shaft ${i} has zero eigenvalue`);
+  }
+  const s = travel / Math.sqrt(lam);
   return threading.V[i].map((x) => s * x);
 }
 
@@ -704,8 +711,10 @@ export function canonicalJson(value) {
   if (value && typeof value === "object") {
     return `{${Object.keys(value).sort().map((k) => `${JSON.stringify(k)}:${canonicalJson(value[k])}`).join(",")}}`;
   }
-  if (typeof value === "number" && !Number.isInteger(value)) throw new Error("only integers and strings are hashed");
-  return JSON.stringify(value);
+  if (typeof value === "string" || (typeof value === "number" && Number.isInteger(value))) {
+    return JSON.stringify(value);
+  }
+  throw new Error("only integers and strings are hashed");
 }
 
 /** Little-endian float64 bytes of a weight vector slice. */
