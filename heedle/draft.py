@@ -11,6 +11,7 @@ from __future__ import annotations
 
 import base64
 import hashlib
+import math
 import re
 from typing import List, Tuple
 
@@ -31,7 +32,28 @@ def _is_int(v) -> bool:
     return isinstance(v, int) and not isinstance(v, bool)
 
 
-def _close(a: float, b: float, rtol: float) -> bool:
+def _is_real_number(v) -> bool:
+    if isinstance(v, bool) or not isinstance(v, (int, float, np.floating)):
+        return False
+    try:
+        return math.isfinite(float(v))
+    except OverflowError:
+        return False
+
+
+def _exact_equal(a, b) -> bool:
+    if type(a) is not type(b):
+        return False
+    if isinstance(a, dict):
+        return a.keys() == b.keys() and all(_exact_equal(a[k], b[k]) for k in a)
+    if isinstance(a, list):
+        return len(a) == len(b) and all(_exact_equal(x, y) for x, y in zip(a, b))
+    return a == b
+
+
+def _close(a, b: float, rtol: float) -> bool:
+    if not (_is_real_number(a) and _is_real_number(b)):
+        return False
     return abs(float(a) - float(b)) <= rtol * max(1.0, abs(float(b)))
 
 
@@ -59,13 +81,13 @@ def _replay(draft: dict, host: Host | None, problems: List[str]) -> None:
     except ValueError as err:
         problems.append(f"H2: {err}")
         return
-    if draft["host"] != host.descriptor():
+    if not _exact_equal(draft["host"], host.descriptor()):
         # H3: and the baseline it states is the host's.
         problems.append("H3: the host descriptor is not this host's (kind, name or seed, baseline root)")
         return
     # H4: the limits are the host's. A draft does not choose its own.
     gate = draft["gate"]
-    if gate != host.gate_header():
+    if not _exact_equal(gate, host.gate_header()):
         problems.append(f"H4: the session's limits are not the host's ({host.gate_header()})")
         return
     sh = host.shape
@@ -114,7 +136,10 @@ def _replay(draft: dict, host: Host | None, problems: List[str]) -> None:
             return                      # what follows would be read on a wrong footing
 
         if kind == "unpick":
-            # U1: an unpick returns to a root that was the fell before.
+            # U1: an unpick returns to a root that was the fell before, and carries no move, gate or claim.
+            if any(k in ev for k in ("move_b64", "move_sha256", "gate", "claim")):
+                problems.append(f"{tag}: U1: an unpick must not carry a move, gate or claim")
+                return
             roots = [r for r, _, _ in lineage]
             if ev.get("root") not in roots:
                 problems.append(f"{tag}: U1: unpick to a root that was never the fell")
@@ -153,9 +178,15 @@ def _replay(draft: dict, host: Host | None, problems: List[str]) -> None:
             if float(np.max(np.sqrt(np.mean(y * y, axis=1)))) > PIN_ATOL:
                 problems.append(f"{tag}: P1: the move is not in the shed of its pins")
         # T1: the gesture is deliberate enough for the tension found here.
+        # Within 1e-6 of a threshold (0.3 or 0.7), tolerate only the immediately adjacent
+        # lighter gesture ("release" near 0.3, "hold" near 0.7), never a two-zone skip.
         tension = max(dist / r_inv, core.predicted_worst(sh, fell, fit, d) / tau)
-        near = any(abs(tension - t) < 1e-6 for t in (0.3, 0.7))
-        if not near and core.GESTURES.index(ev["gesture"]) < core.ZONES.index(core.zone_of(tension)):
+        need = core.ZONES.index(core.zone_of(tension))
+        if need == 2 and abs(tension - 0.7) < 1e-6:
+            need = 1
+        elif need == 1 and abs(tension - 0.3) < 1e-6:
+            need = 0
+        if core.GESTURES.index(ev["gesture"]) < need:
             problems.append(f"{tag}: T1: gesture {ev['gesture']!r} is too light for tension {tension:.3f}")
         # C1: the claim is the one these roots, this limit and these pins make.
         cl = ev["claim"]
@@ -163,13 +194,13 @@ def _replay(draft: dict, host: Host | None, problems: List[str]) -> None:
         if cid != cl.get("id"):
             problems.append(f"{tag}: C1: claim identifier differs")
         # C2: the fresh probes are the host's number of them, and the change on them is as recorded.
-        if cl.get("probes") != host.probes:
+        if not _is_int(cl.get("probes")) or cl["probes"] != host.probes:
             problems.append(f"{tag}: C2: not the host's number of fresh probes")
         probes = host.encode(host.fresh_inputs(core.probe_seed(root, cid), host.probes))
         if not _close(cl["realized"], core.behaviour_change(sh, fell, cand, probes), RTOL):
             problems.append(f"{tag}: C2: realized change differs")
         # C3: the draft says truly what the dispute read.
-        if cl.get("exhaustive") is not host.exhaustive or cl.get("rows") != host.dispute_rows:
+        if cl.get("exhaustive") is not host.exhaustive or not _is_int(cl.get("rows")) or cl["rows"] != host.dispute_rows:
             problems.append(f"{tag}: C3: the draft misstates what the dispute read")
         # C4: the recorded witness is an input of the host, and changes by the recorded amount.
         seen = host.witness_change(fell, cand, cl["witness"])

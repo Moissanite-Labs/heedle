@@ -101,6 +101,24 @@ class Shafts(unittest.TestCase):
                     for t in (0.2, -0.7):
                         self.assertAlmostEqual(b.th.predicted_change(b.th.shaft_move(i, t)), abs(t), places=9)
 
+    def test_shaft_move_rejects_out_of_range_and_zero_eigenvalue(self):
+        host = ClothHost(7)
+        th = host.threading(host.w0)
+        for bad_idx in (-1, len(th.lam), True):
+            with self.assertRaises(ValueError):
+                th.shaft_move(bad_idx, 0.1)
+        # Zero weights give J with only the constant b3 column non-zero (rank 1 over 2 inputs),
+        # so lam[1] == 0.0 and shaft_move(1, ...) must raise ValueError instead of dividing by zero.
+        sh = core.Shape(2, 2, 1, centre=False)
+        enc = core.Enc(
+            idx=np.array([[0, 1], [0, 1]], dtype=np.int64),
+            val=np.array([[1.0, 1.0], [2.0, -1.0]], dtype=np.float64),
+        )
+        th_zero = core.Threading(sh, np.zeros(sh.P, dtype=np.float64), enc)
+        self.assertEqual(float(th_zero.lam[1]), 0.0)
+        with self.assertRaises(ValueError):
+            th_zero.shaft_move(1, 0.1)
+
     def test_tie_up_delivers_its_share(self):
         for name, b in Bench.all():
             for K in (4, 16, 64):

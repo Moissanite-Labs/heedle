@@ -100,6 +100,11 @@ def t_gate_radius(d): d["gate"]["r_invariant"] = "1000000000"
 def t_gate_all(d): d["gate"] = {"r_invariant": "1000000000", "budget": 1000000, "cost": 1, "tau": "0.0001"}
 def t_gate_no_tau(d): del d["gate"]["tau"]
 def t_gate_nan(d): d["gate"]["tau"] = "nan"
+def t_gate_bool_cost(d):
+    d["gate"]["cost"] = True
+    return True
+def t_unpick_with_claim(d):
+    d["events"][first(d, "unpick")]["claim"] = {"id": "0" * 64}
 def t_seq(d):
     for e in d["events"]: e["seq"] = 7
 def t_swap(d):
@@ -182,6 +187,7 @@ CASES = [
     ("H4", "every limit changed in the header", "cloth", t_gate_all),
     ("H4", "no limit in the header", "cloth", t_gate_no_tau),
     ("H4", "a limit that is not a number", "cloth", t_gate_nan),
+    ("H4", "a boolean cost equal to 1", "cloth", t_gate_bool_cost),
     ("E1", "events renumbered", "cloth", t_seq),
     ("E2", "two events swapped", "cloth", t_swap),
     ("E3", "a field changed under its identifier", "cloth", t_stale_id),
@@ -192,6 +198,7 @@ CASES = [
     ("E5: pins", "pins unsorted and repeated", "cloth", t_pins_unsorted),
     ("E5: pins", "a pin outside the domain", "cloth", t_pins_outside),
     ("U1", "an unpick to a root that never was", "cloth", t_unpick_nowhere),
+    ("U1", "an unpick carrying a claim", "cloth", t_unpick_with_claim),
     ("M1", "a move changed under its hash", "cloth", t_move_bytes),
     ("G1: gate verdict", "a recorded refusal the gate does not give", "cloth", t_gate_verdict),
     ("G1: a move the gate refuses", "a move far outside the gate", "cloth", t_refused_move),
@@ -297,6 +304,93 @@ class Replay(unittest.TestCase):
         self.assertNotEqual(core.genesis_id(doc["host"], other), doc["events"][0]["prev"])
         with self.assertRaises(ValueError):
             core.canonical_json({"tau": 0.5})
+
+    def test_t1_boundary_and_strict_type_hardening(self):
+        host = HOSTS["cloth"]
+        sh = host.shape
+        fit = host.encode(host.fit_inputs())
+        th = host.threading(host.w0)
+        base_dir = th.shaft_move(0, 1.0)
+        unit_tension = max(
+            float(np.linalg.norm(base_dir)) / host.r_invariant,
+            core.predicted_worst(sh, host.w0, fit, base_dir) / host.tau_value,
+        )
+
+        def make_pick_at_tension(target_tension: float, gesture: str) -> dict:
+            move = base_dir * (target_tension / unit_tension)
+            cand = host.w0 + move
+            ok, dist, remaining, reason = core.verify_weight_update_safety(
+                host.w0, cand, host.r_invariant, float(host.budget), float(host.cost)
+            )
+            self.assertTrue(ok)
+            w0_root = host.root(host.w0)
+            root = host.root(cand)
+            cid = core.claim_id(host.kind, w0_root, root, host.tau, [])
+            probes = host.encode(host.fresh_inputs(core.probe_seed(root, cid), host.probes))
+            realized = core.behaviour_change(sh, host.w0, cand, probes)
+            worst, witness, rows, exhaustive = host.dispute(host.w0, cand)
+            ev = {
+                "seq": 1,
+                "kind": "snap" if worst > host.tau_value else "pick",
+                "parent_root": w0_root,
+                "root": root,
+                "move_b64": core.move_to_b64(move),
+                "move_sha256": hashlib.sha256(np.asarray(move, dtype="<f8").tobytes()).hexdigest(),
+                "pins": [],
+                "gesture": gesture,
+                "tau": host.tau,
+                "gate": {"accepted": True, "distance": dist, "remaining_budget": remaining, "reason": reason},
+                "claim": {
+                    "id": cid, "probes": host.probes, "realized": realized,
+                    "worst": worst, "witness": witness, "rows": rows,
+                    "exhaustive": exhaustive, "refuted": worst > host.tau_value,
+                },
+            }
+            doc = {"schema": draft.SCHEMA, "host": host.descriptor(), "gate": host.gate_header(), "events": [ev]}
+            rechain(doc)
+            return doc
+
+        # Near 0.7 (knot boundary): "knot" and adjacent "hold" pass, but two-zone skip "release" fails T1.
+        self.assertEqual(draft.replay(make_pick_at_tension(0.7, "knot"), host=host), [])
+        self.assertEqual(draft.replay(make_pick_at_tension(0.7, "hold"), host=host), [])
+        probs_rel_07 = draft.replay(make_pick_at_tension(0.7, "release"), host=host)
+        self.assertTrue(any("T1" in p for p in probs_rel_07), probs_rel_07)
+        # Just below 0.7 (shared zone, within 1e-6 of 0.7): "hold" passes, "release" fails T1.
+        self.assertEqual(draft.replay(make_pick_at_tension(0.7 - 5e-7, "hold"), host=host), [])
+        probs_rel_below07 = draft.replay(make_pick_at_tension(0.7 - 5e-7, "release"), host=host)
+        self.assertTrue(any("T1" in p for p in probs_rel_below07), probs_rel_below07)
+        # Away from 0.7 (strictly above 0.7 + 1e-6): "hold" fails T1.
+        probs_hold_above07 = draft.replay(make_pick_at_tension(0.7 + 1e-5, "hold"), host=host)
+        self.assertTrue(any("T1" in p for p in probs_hold_above07), probs_hold_above07)
+        # Near 0.3 (shared boundary): adjacent "release" passes; away from 0.3 it fails T1.
+        self.assertEqual(draft.replay(make_pick_at_tension(0.3, "release"), host=host), [])
+        probs_rel_above03 = draft.replay(make_pick_at_tension(0.3 + 1e-5, "release"), host=host)
+        self.assertTrue(any("T1" in p for p in probs_rel_above03), probs_rel_above03)
+
+        # Strict numeric / exact-type guards reject booleans, strings, non-finite/overflowing ints, and floats for int fields.
+        self.assertFalse(draft._close(True, 1.0, 1e-6))
+        self.assertFalse(draft._close("1.0", 1.0, 1e-6))
+        self.assertFalse(draft._close(float("nan"), 1.0, 1e-6))
+        self.assertFalse(draft._close(10**400, 1.0, 1e-6))
+        self.assertFalse(draft._exact_equal({"cost": True}, {"cost": 1}))
+        from heedle.hosts import ClothHost
+        host1 = ClothHost(1)
+        bad_h3 = {
+            "schema": draft.SCHEMA,
+            "host": {"kind": "cloth/1", "seed": True, "w0_root": host1.root(host1.w0)},
+            "gate": host1.gate_header(),
+            "events": [],
+        }
+        self.assertTrue(any("H3" in p for p in draft.replay(bad_h3, host=host1)))
+        bad_bool_metric = make_pick_at_tension(0.3, "hold")
+        bad_bool_metric["events"][0]["gate"]["distance"] = True
+        self.assertTrue(any("G2" in p for p in draft.replay(bad_bool_metric, host=host)))
+        bad_float_probes = make_pick_at_tension(0.3, "hold")
+        bad_float_probes["events"][0]["claim"]["probes"] = float(host.probes)
+        self.assertTrue(any("C2" in p for p in draft.replay(bad_float_probes, host=host)))
+        bad_float_rows = make_pick_at_tension(0.3, "hold")
+        bad_float_rows["events"][0]["claim"]["rows"] = float(host.dispute_rows)
+        self.assertTrue(any("C3" in p for p in draft.replay(bad_float_rows, host=host)))
 
 
 if __name__ == "__main__":

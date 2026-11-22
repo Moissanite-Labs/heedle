@@ -314,7 +314,13 @@ class Threading:
 
     def shaft_move(self, i: int, travel: float) -> np.ndarray:
         """[P] The move along shaft i whose first-order behaviour change is |travel|."""
-        return travel * self.V[:, i] / math.sqrt(self.lam[i])
+        if isinstance(i, bool) or not isinstance(i, (int, np.integer)) or not 0 <= int(i) < len(self.lam):
+            raise ValueError(f"shaft index {i!r} out of range")
+        idx = int(i)
+        lam = float(self.lam[idx])
+        if not (math.isfinite(lam) and lam > 0.0):
+            raise ValueError(f"shaft {idx} has zero eigenvalue")
+        return travel * self.V[:, idx] / math.sqrt(lam)
 
     def rank(self, rtol: float = 1e-10) -> int:
         return int(np.sum(self.s > rtol * self.s[0]))
